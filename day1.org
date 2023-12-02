@@ -37,6 +37,19 @@ Consider your entire calibration document. What is the sum of all of the calibra
 - read each line for first number (also last) for each number until last
 - when all lines are read, add all numbers
 
+
+
+** Part 2
+--- Part Two ---
+
+Your calculation isn't quite right. It looks like some of the digits are actually spelled out with letters: one, two, three, four, five, six, seven, eight, and nine also count as valid "digits".
+
+Equipped with this new information, you now need to find the real first and last digit on each line. For example:
+
+In this example, the calibration values are 29, 83, 13, 24, 42, 14, and 76. Adding these together produces 281.
+
+What is the sum of all of the calibration values?
+
 #+NAME: puzzle-input
 rhqrpdxsqhgxzknr2foursnrcfthree
 2bmckl
@@ -1039,76 +1052,107 @@ eight5gmbzbqtxrr27dtgfdbmtc7
 twoggvcnfmtrseven4dx
 ssevenhcltwoseven2cxrmxxcr
 
-
-#+BEGIN_SRC python :results output :var puzzleInput=puzzle-input :session day1py
+#+BEGIN_SRC python :results output :var puzzleInput=puzzle-input
 #!/usr/bin/python3
 
-puzzle_lines = []
-puzzleLine = ""
 
-for item in puzzleInput: #single characters include \n
-    puzzleLine = puzzleLine + item
-    if item == "\n":
-        puzzle_lines.append(puzzleLine)
-        puzzleLine = "" 
+def readPuzzleInput(puzzleStr: str):
+    puzzleList = []
+    puzzleLine = ""
 
-lineNumList = []
-count = 0
+    for item in puzzleStr: #single characters include \n
+        puzzleLine = puzzleLine + item
+        if item == "\n":
+            puzzleList.append(puzzleLine)
+            puzzleLine = "" 
 
-for line in puzzle_lines:
+    return puzzleList
+
+
+def checkForFirstNum(segment: str): 
+    splIntDict = {"one":1, "two":2, "three":3, "four":4, "five":5, "six":6, "seven":7, "eight":8, "nine":9}
+    value = []
+    subSeg = ""
+
+    for item in segment:
+        subSeg = subSeg + item
+
+        for key in splIntDict:
+            if key in subSeg:
+                value.append(splIntDict[key])
+                #value = value + checkForSpelledOut(segment[len(subSeg):])
+                return value
+
+
+    return value
+
+def checkForLastNum(segment: str):
+    splIntDict = {"eno":1, "owt":2, "eerht":3, "ruof":4, "evif":5, "xis":6, "neves":7, "thgie":8, "enin":9}
+    value = []
+    subSeg = ""
+    segmentRev = segment[::-1]
+
+    for item in segmentRev:
+        subSeg = subSeg + item
+
+        for key in splIntDict:
+            if key in subSeg:
+                value.append(splIntDict[key])
+                #value = value + checkForSpelledOut(segment[len(subSeg):])
+                return value
+
+    return value
+
+
+def checkPuzLine(line: str):
+            
     lineNums = []
+    accChars = ""
+    itemCount = 1 # since len() doesn't care about starting at 0 
+
     for item in line:
+
         try:
-            lineNums.append(int(item))
+            digit = int(item)
+
+            lineNums = lineNums + checkForFirstNum(accChars)
+            lineNums.append(digit)
+
+            accChars = ""
+
         except:
-            pass
+            accChars = accChars + item
 
-    lineNumList.append(lineNums) #should be list of list    
+            lineNums = lineNums + checkForFirstNum(accChars)
 
-    count = count + 1
 
-result = 0
+        if itemCount >= len(line):
+            lineNums = lineNums + checkForLastNum(accChars)
 
-for item in lineNumList:
-    first = str(item[0])
-    last = str(item[-1])
-    combined = first + last
-    combinedInt = int(combined)
-    result = result + combinedInt
+        itemCount = itemCount + 1
 
-print(result)
+    return lineNums
+    
+
+def calcPuzResult(intLists):
+    result = 0
+
+    for item in intLists:
+        if item:
+            first = str(item[0])
+            last = str(item[-1])
+            combined = first + last
+            combinedInt = int(combined)
+            result = result + combinedInt
+
+    return result
+
+puzList = readPuzzleInput(puzzleInput)
+puzIntList = []
+for line in puzList:
+    puzIntList.append(checkPuzLine(line))
+print(calcPuzResult(puzIntList))
 #+END_SRC
 
 #+RESULTS:
-: 55208
-
-
-
-
-** Part 2
---- Part Two ---
-
-Your calculation isn't quite right. It looks like some of the digits are actually spelled out with letters: one, two, three, four, five, six, seven, eight, and nine also count as valid "digits".
-
-Equipped with this new information, you now need to find the real first and last digit on each line. For example:
-
-two1nine
-eightwothree
-abcone2threexyz
-xtwone3four
-4nineeightseven2
-zoneight234
-7pqrstsixteen
-
-In this example, the calibration values are 29, 83, 13, 24, 42, 14, and 76. Adding these together produces 281.
-
-What is the sum of all of the calibration values?
-
-#+BEGIN_SRC python :session day1py :results output
-
-
-
-#+END_SRC
-
-#+RESULTS:
-: 55208
+: 54578
