@@ -31,7 +31,7 @@ Of course, the actual engine schematic is much larger. What is the sum of all of
 note: unsure if I need to check for duplicates
 
 
-#+BEGIN_SRC python :results output :session part
+#+BEGIN_SRC python :results output :session part2
 import string
 
 punctuation = [i for i in string.punctuation if i != '.']
@@ -117,6 +117,7 @@ for line in partNums:
 
 print(result)
 
+
 #+END_SRC
 
 #+RESULTS:
@@ -145,10 +146,38 @@ In this schematic, there are two gears. The first is in the top left; it has par
 
 What is the sum of all of the gear ratios in your engine schematic?
 
-#+BEGIN_SRC python :results output :session part
+#+BEGIN_SRC python :results output :session part2
+count = 0
+partNums = []
+gearNums = []
 
+for line in puzzleInput:
+    lineSymbolsLocation = getLineSymbolLocations(line, punctuation)
+    if lineSymbolsLocation:
+        for colLoc in lineSymbolsLocation:
+            partNumsSet = set(checkForPartNums(count, colLoc, puzzleInput))
+            partNumList = list(partNumsSet)
+            partNums.append(partNumList)
+            if line[colLoc] == "*":
+                #print("[!] Found a *")
+                if len(partNumList) == 2:
+                    gearRatio = partNumList[0] * partNumList[1]
+                    #print(type(gearRatio))
+                    gearNums.append(gearRatio)
+    count += 1
+
+
+
+part2result = 0
+
+for gear in gearNums:
+    part2result += gear
+
+print(part2result)
 
 #+END_SRC
 
 #+RESULTS:
-: 539637
+: 82818007
+
+
