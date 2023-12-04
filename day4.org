@@ -1,0 +1,62 @@
+
+
+
+* Part 1
+
+
+#+BEGIN_SRC python :results output
+import string
+
+puzzleInput = list(map((lambda line : line.strip()), open("./day4.txt", "r").readlines()))
+gameRemoved = list(map((lambda gameLess: "".join(gameLess.split(":")[1:]).strip()), puzzleInput))
+
+winningSplit = list(map((lambda game: game.split("|")), gameRemoved))
+
+convertedWin = list(map((lambda win: win.strip(" ").split(" ")), [item[0] for item in winningSplit]))
+convertedNum = list(map((lambda num: num.strip(" ").split(" ")), [item[1] for item in winningSplit]))
+
+def intFilterList(nums):
+    numberList = []
+    for num in nums:
+        if num != "":
+            numberList.append(int(num))
+
+    return numberList
+
+intWin = list(map(intFilterList, convertedWin))
+intNum = list(map(intFilterList, convertedNum))
+
+combined = list(zip(intWin, intNum))
+
+def checkGame(game):
+    winning = game[0]
+    myNumbers = game[1]
+    matches = 0
+    for myNum in myNumbers:
+        for winNum in winning:
+            if winNum == myNum:
+                matches += 1
+    #print(won)
+    #print(calcPoints(matches))
+    return calcPoints(matches)
+
+def calcPoints(matches):
+    if matches == 1:
+        return matches
+    elif matches > 1:
+        return (calcPoints(matches-1)*2)
+    else:
+        return 0
+
+
+part1result = 0
+for item in combined:
+    part1result += checkGame(item)
+
+#print(combined)
+
+print(part1result)
+#+END_SRC
+
+#+RESULTS:
+: 15205
