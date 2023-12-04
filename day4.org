@@ -4,7 +4,7 @@
 * Part 1
 
 
-#+BEGIN_SRC python :results output
+#+BEGIN_SRC python :results output :session part2
 import string
 
 puzzleInput = list(map((lambda line : line.strip()), open("./day4.txt", "r").readlines()))
@@ -60,3 +60,47 @@ print(part1result)
 
 #+RESULTS:
 : 15205
+
+
+* Part 2
+
+#+BEGIN_SRC python :results output :session part2
+
+cardDict = {}
+
+for i in range(0, (len(combined))):
+    cardDict[i] = 1
+
+def checkGamePart2(game):
+    winning = game[0]
+    myNumbers = game[1]
+    matches = 0
+    for myNum in myNumbers:
+        for winNum in winning:
+            if winNum == myNum:
+                matches += 1
+    #print(matches)
+    return matches
+
+def assignCardCopies(position: int, matches: int, copies):
+    for i in range(1, matches+1):
+        cardDict[position + i] += copies
+
+
+counter = 0
+for game in combined:
+    assignCardCopies(counter, checkGamePart2(game), cardDict[counter])
+    counter += 1
+
+part2result = 0
+for key in cardDict:
+    #print("key {}: value = {}".format(key, cardDict[key]))
+
+    part2result += cardDict[key]
+
+print(part2result)
+
+#+END_SRC
+
+#+RESULTS:
+: 6189740
