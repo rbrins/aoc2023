@@ -104,3 +104,14 @@ print(part2result)
 
 #+RESULTS:
 : 6189740
+
+* Part 1 - again with guile
+
+#+BEGIN_SRC scheme
+  (define-module (hello))
+  (define-public hi
+    (lambda ()
+      "hello world\n"))
+#+END_SRC
+
+#+RESULTS:
