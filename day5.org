@@ -94,3 +94,93 @@ print(min([i for i in mappedSeeds]))
 
 * Part 2
 
+#+BEGIN_SRC python :results output :tangle
+import re
+
+puzzleInput = [i for i in list(map((lambda line : line.strip()), open("./day5.txt", "r").readlines())) if i != ""]
+
+seedNumsInit = [int(i) for i in puzzleInput[0].split(" ") if i != "seeds:"]
+
+def getSeedNums(start, length):
+    return list(range(start, start + length))
+
+count = 0
+seedNums = []
+for count in range(0, len(seedNumsInit)):
+    if count % 2 == 0:
+        seedNums += getSeedNums(seedNumsInit[count], seedNumsInit[count + 1])
+        #print("start: {}, length: {}".format(seedNumsInit[count], seedNumsInit[count + 1]))
+
+    count += 1
+#print(seedNums)
+            
+
+def splitMaps(puzzle):
+
+    seedDict = {}
+
+    for item in puzzle: # should be a str
+        if (re.search(".+:", item)):
+            key = item[:-5:]
+            seedDict[key] = []
+        else:
+            seedDict[key].append([int(i) for i in item.split(" ")])
+
+    return seedDict
+
+mapDict = splitMaps(puzzleInput[1:])
+
+# want a single list of the map list for a given map
+def createMap(mapLine, sourceNum): 
+    mapDest = mapLine[0]
+    mapSource = mapLine[1]
+    mapSteps = mapLine[2]
+
+    if sourceNum in range(mapSource, mapSource + mapSteps):
+        return mapDest + (sourceNum - mapSource)
+
+    return sourceNum
+    
+
+#print(seedNums)
+#print(seedDict)
+mappedSeeds = {}
+for seed in seedNums:
+    mappedSeeds[seed] = False
+
+newMaps = {}
+
+for key in mapDict:
+    #print(key)
+    # interate through each mapping
+    for mapLine in mapDict[key]:
+        #print("--- {} ---".format(mapLine))
+        for seed in mappedSeeds:
+
+            if (mappedSeeds[seed] == True):
+                newMaps[seed] = True
+
+            else:
+                newMapNum = createMap(mapLine, seed)
+                if (newMapNum != seed):
+                    newMaps[newMapNum] = True
+                else:
+                    newMaps[seed] = False
+            #print("seed: {} | mapped to {}".format(seed,createMap(item,seed)))
+    
+   # after all seeds are mapped, then reset mappedSeed IDs
+        mappedSeeds = newMaps
+        newMaps = {}
+
+    # after all maps in a key are done, then reset mapped flag
+    for seedKey in mappedSeeds:
+        mappedSeeds[seedKey] = False
+
+#print(mappedIterations)
+#print(seedNums)
+#print(mappedSeeds)
+
+print(min([i for i in mappedSeeds]))
+#+END_SRC
+
+#+RESULTS:
