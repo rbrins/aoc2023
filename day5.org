@@ -101,18 +101,17 @@ puzzleInput = [i for i in list(map((lambda line : line.strip()), open("./day5.tx
 
 seedNumsInit = [int(i) for i in puzzleInput[0].split(" ") if i != "seeds:"]
 
-def getSeedNums(start, length):
-    return list(range(start, start + length))
+def getSeedNumPairs(start, length):
+    return (start, length)
 
 count = 0
-seedNums = []
+seedNumPairs = []
 for count in range(0, len(seedNumsInit)):
     if count % 2 == 0:
-        seedNums += getSeedNums(seedNumsInit[count], seedNumsInit[count + 1])
+        seedNumPairs.append(getSeedNumPairs(seedNumsInit[count], seedNumsInit[count + 1]))
         #print("start: {}, length: {}".format(seedNumsInit[count], seedNumsInit[count + 1]))
 
     count += 1
-#print(seedNums)
             
 
 def splitMaps(puzzle):
@@ -131,56 +130,69 @@ def splitMaps(puzzle):
 mapDict = splitMaps(puzzleInput[1:])
 
 # want a single list of the map list for a given map
-def createMap(mapLine, sourceNum): 
+
+def mappingPairIntersection(mapLine, pair): 
     mapDest = mapLine[0]
     mapSource = mapLine[1]
+    srcDestDiff = mapSource - mapDest
     mapSteps = mapLine[2]
 
-    if sourceNum in range(mapSource, mapSource + mapSteps):
-        return mapDest + (sourceNum - mapSource)
+    pairList = range(pair[0], pair[0] + pair[1])
+    #print("pairList:     {}".format(pairList))
 
-    return sourceNum
+    mapping = range(mapSource, mapSource + mapSteps)
+    #print("mapping:      {}".format(mapping))
+    
+    intersectionSrc = [value for value in mapping if value in pairList]
+    #print("intersection: {}".format(intersectionSrc))
+
+    if intersectionSrc:
+        return ((min(intersectionSrc) - srcDestDiff), len(intersectionSrc))
+
+    return pair
     
 
 #print(seedNums)
 #print(seedDict)
-mappedSeeds = {}
-for seed in seedNums:
-    mappedSeeds[seed] = False
+class seedInfo:
+    def __init__(self, start, step, match):
+        self.pair = (start, step)
+        self.mapped = match
 
-newMaps = {}
+mappedSeeds = []
+for seed in seedNumPairs:
+    mappedSeeds.append(seedInfo(seed[0], seed[1], False))
 
 for key in mapDict:
-    #print(key)
+    print(key)
     # interate through each mapping
     for mapLine in mapDict[key]:
-        #print("--- {} ---".format(mapLine))
-        for seed in mappedSeeds:
+        print("--- {} ---".format(mapLine))
+        for info in mappedSeeds:
 
-            if (mappedSeeds[seed] == True):
-                newMaps[seed] = True
+            # if there is not mapped
+            if (info.mapped != True):
+                newPair = mappingPairIntersection(mapLine, info.pair)
+                oldPair = info.pair
+                if (newPair != info.pair):
+                    info.pair = newPair
+                    info.mapped = True
 
-            else:
-                newMapNum = createMap(mapLine, seed)
-                if (newMapNum != seed):
-                    newMaps[newMapNum] = True
-                else:
-                    newMaps[seed] = False
-            #print("seed: {} | mapped to {}".format(seed,createMap(item,seed)))
+                    #print("seed: {} | mapped to {}".format(oldPair, newPair))
     
-   # after all seeds are mapped, then reset mappedSeed IDs
-        mappedSeeds = newMaps
-        newMaps = {}
-
     # after all maps in a key are done, then reset mapped flag
-    for seedKey in mappedSeeds:
-        mappedSeeds[seedKey] = False
+    for info in mappedSeeds:
+        info.mapped = False
 
 #print(mappedIterations)
-#print(seedNums)
 #print(mappedSeeds)
 
-print(min([i for i in mappedSeeds]))
+#print(seedNumPairs)
+
+#print([i.pair for i in mappedSeeds])
+
+part2result = min([i.pair[0] for i in mappedSeeds])
+print("Part 2 Result: {}".format(part2result))
 #+END_SRC
 
 #+RESULTS:
