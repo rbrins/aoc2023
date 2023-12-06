@@ -55,40 +55,9 @@ print(part1result)
 * Part 2 
 
 #+BEGIN_SRC python :results output
+# fully maintainable
+print(len([(int("".join([i for i in list(map((lambda line : line.strip()), open("./day6.txt", "r").readlines()))[0][10:].split(" ") if i != ""])))*i for i in range(1,int("".join([i for i in list(map((lambda line : line.strip()), open("./day6.txt", "r").readlines()))[0][10:].split(" ") if i != ""]))) if ((int("".join([i for i in list(map((lambda line : line.strip()), open("./day6.txt", "r").readlines()))[0][10:].split(" ") if i != ""])))-i) * i > int("".join([i for i in list(map((lambda line : line.strip()), open("./day6.txt", "r").readlines()))[1][10:].split(" ") if i != ""]))]))
 
-puzzleInput = list(map((lambda line : line.strip()), open("./day6.txt", "r").readlines()))
-
-timeInt = int("".join([i for i in puzzleInput[0][10:].split(" ") if i != ""]))
-distanceInt = int("".join([i for i in puzzleInput[1][10:].split(" ") if i != ""]))
-
-
-def getDistance(timeMax):
-    #distance = speed * time
-    distances = []
-    for i in range(1, timeMax + 1):
-        timeHeld = i
-        timeRelease = timeMax - timeHeld
-        distances.append(timeHeld * timeRelease)
-    #print(distances)
-    return distances
-
-distance = getDistance(timeInt)
-#print(distances)
-
-recordNums = []
-recordCount = 0
-
-for i in distance:
-    if i > distanceInt:
-        #print(f"i: {i}, current record: {distanceInts[count]}")
-        recordCount += 1
-
-#print(recordNums)
-part2result = 1
-#for x in recordNums:
-#    part2result = part2result * x
-
-print(recordCount)
 #+END_SRC
 
 #+RESULTS:
