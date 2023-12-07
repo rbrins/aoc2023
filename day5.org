@@ -95,104 +95,112 @@ print(min([i for i in mappedSeeds]))
 * Part 2
 
 #+BEGIN_SRC python :results output :tangle
-import re
 
 puzzleInput = [i for i in list(map((lambda line : line.strip()), open("./day5.txt", "r").readlines())) if i != ""]
 
-seedNumsInit = [int(i) for i in puzzleInput[0].split(" ") if i != "seeds:"]
+seedsList = [int(i) for i in puzzleInput[0].split(" ") if i != "seeds:"]
 
-def getSeedNumPairs(start, length):
-    return (start, length)
-
+seeds = []
 count = 0
-seedNumPairs = []
-for count in range(0, len(seedNumsInit)):
+for num in seedsList:
     if count % 2 == 0:
-        seedNumPairs.append(getSeedNumPairs(seedNumsInit[count], seedNumsInit[count + 1]))
-        #print("start: {}, length: {}".format(seedNumsInit[count], seedNumsInit[count + 1]))
+        seeds.append((num, num + seedsList[count+1] - 1))
 
     count += 1
-            
 
-def splitMaps(puzzle):
+maps = []
+currentMap = []
+for line in puzzleInput[2:]:
+    lineSplit = line.split(" ")
 
-    seedDict = {}
+    if line == "":
+        continue
 
-    for item in puzzle: # should be a str
-        if (re.search(".+:", item)):
-            key = item[:-5:]
-            seedDict[key] = []
-        else:
-            seedDict[key].append([int(i) for i in item.split(" ")])
+    if lineSplit[1] == "map:":
+        maps.append(currentMap)
+        #print(lineSplit)
+        currentMap = []
+        continue
+    if lineSplit[1] != "map:":
+        #print(lineSplit)
+        # converting to some of the math now for the maps
+        # source, source_end, and adjustment to dest if source match
+        destStart = int(lineSplit[0])
+        sourceStart = int(lineSplit[1])
+        rangeLength = int(lineSplit[2])
+        mathOnMap = (sourceStart, sourceStart+rangeLength-1, destStart-sourceStart)
+        currentMap.append(mathOnMap)
 
-    return seedDict
+maps.append(currentMap)
+#print(seeds)
+#print(maps)
 
-mapDict = splitMaps(puzzleInput[1:])
+# a little rough but we got there
 
-# want a single list of the map list for a given map
+def applyMaps():
+    lowest = 
 
-def mappingPairIntersection(mapLine, pair): 
-    mapDest = mapLine[0]
-    mapSource = mapLine[1]
-    srcDestDiff = mapSource - mapDest
-    mapSteps = mapLine[2]
+    for seed in seeds:
+        # default the mapped destination is the same as its current locaion
+        destinations = []
+        destinations.append(seed)
 
-    pairList = range(pair[0], pair[0] + pair[1])
-    #print("pairList:     {}".format(pairList))
+        # check a seed against all of the maps 
+        # also goes down the tree of seeds, instead all stepping into each section 
+        # potentially so rework here if there is any overlap of the seeds
+        # fixes my original fault with the "already mapped" flag
+        for mapRange in maps:
+            # this only worries me if there are mapStarts or mapEnds that
+            sources = destinations
+            destinations = []
 
-    mapping = range(mapSource, mapSource + mapSteps)
-    #print("mapping:      {}".format(mapping))
-    
-    intersectionSrc = [value for value in mapping if value in pairList]
-    #print("intersection: {}".format(intersectionSrc))
+            while len(sources) > 0:
+                # popping it off sources will not rerun it for the current map
+                source = sources.pop()
+                sourceStart, sourceEnd = source
+                for mapStart, mapEnd, adjust in mapRange:
+                    # if source is wholly within mapped range
+                    if sourceStart >= mapStart and sourceEnd <= mapEnd:
+                        destinations.append((sourceStart+adjust, sourceEnd+adjust))
+                        break
+                    # if the source is wholly outoside mapped range
+                    if sourceEnd < mapStart or sourceStart > mapEnd:
+                        continue
+                    # if if the source end is in but the source start is not
+                    if sourceStart < mapStart:
+                        sources.append((sourceStart, mapStart-1))
+                        sources.append((mapStart, sourceEnd))
+                        break
+                    # if the source start is in but the source end is not
+                    if sourceEnd > mapEnd:
+                        sources.append((sourceStart, mapEnd))
+                        sources.append((mapEnd+1, sourceEnd))
+                        break
 
-    if intersectionSrc:
-        return ((min(intersectionSrc) - srcDestDiff), len(intersectionSrc))
+        seedLowest = lowestLocation(destinations)
+        lowest = min(lowest, seedLowest)
+    return lowest
 
-    return pair
-    
+def lowestLocation(locations):
+    lowest = locations[0][0]
+    for location in locations:
+        lowest = min(location[0], lowest)
+    return lowest
 
-#print(seedNums)
-#print(seedDict)
-class seedInfo:
-    def __init__(self, start, step, match):
-        self.pair = (start, step)
-        self.mapped = match
+def getLowestLoc():
+    lowest = 
+    for range in maps[6]:
 
-mappedSeeds = []
-for seed in seedNumPairs:
-    mappedSeeds.append(seedInfo(seed[0], seed[1], False))
 
-for key in mapDict:
-    print(key)
-    # interate through each mapping
-    for mapLine in mapDict[key]:
-        print("--- {} ---".format(mapLine))
-        for info in mappedSeeds:
+lowest = applyMaps()
 
-            # if there is not mapped
-            if (info.mapped != True):
-                newPair = mappingPairIntersection(mapLine, info.pair)
-                oldPair = info.pair
-                if (newPair != info.pair):
-                    info.pair = newPair
-                    info.mapped = True
+print(lowest)
 
-                    #print("seed: {} | mapped to {}".format(oldPair, newPair))
-    
-    # after all maps in a key are done, then reset mapped flag
-    for info in mappedSeeds:
-        info.mapped = False
 
-#print(mappedIterations)
-#print(mappedSeeds)
 
-#print(seedNumPairs)
-
-#print([i.pair for i in mappedSeeds])
-
-part2result = min([i.pair[0] for i in mappedSeeds])
-print("Part 2 Result: {}".format(part2result))
 #+END_SRC
 
 #+RESULTS:
+: 15880236
+
+* NEVER AGAIN
