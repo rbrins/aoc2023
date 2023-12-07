@@ -62,3 +62,70 @@ print(len([(int("".join([i for i in list(map((lambda line : line.strip()), open(
 
 #+RESULTS:
 : 24655068
+
+
+* Part 1 again - Haskell
+
+#+BEGIN_SRC haskell :results output
+
+--main :: IO ()
+--main = do
+  -- Read the contents of the file
+  content <- readFile "./day6.txt"
+  -- Split the contents into a list of strings
+  let stringsList = lines content
+  let timeList = map (read::String->Int) (take 4 (drop 1 (concatMap words stringsList)))
+  let distList = map (read::String->Int) (drop 6 (concatMap words stringsList))
+
+  :t timeList
+  :t distList
+
+  mapM_ putStrLn (map show timeList)
+  mapM_ putStrLn (map show distList)
+
+  getDistance maxTime = map (\x -> ((maxTime - x) * x))  [1..maxTime]
+
+  let allDist = map getDistance timeList
+  :t allDist
+--  mapM_ putStrLn (map show allDist)
+
+
+--  let testComp = map compDist (take 1 timeList) (take 1 distList)
+
+--  putStrLn (show testComp)
+
+  compDist (currDistList, recordDist) = length (filter (\x -> x > recordDist) currDistList)
+
+  let testComp = zip allDist distList
+  let result = map compDist testComp
+
+  putStrLn (show result)
+  
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+
+ghci> ghci> ghci> ghci> ghci| ghci| ghci| 
+<interactive>:2102:3: error:
+    parse error (possibly incorrect indentation or mismatched brackets)
+timeList :: [Int]
+distList :: [Int]
+ghci> 42
+89
+91
+89
+308
+1170
+1291
+1467
+ghci> ghci> ghci> ghci| 
+<interactive>:2111:3: error:
+    parse error (possibly incorrect indentation or mismatched brackets)
+ghci> ghci> ghci> ghci> ghci> ghci> ghci> ghci> ghci> ghci> compDist :: Ord a => ([a], a) -> Int
+  	-- Defined at <interactive>:2118:3
+ghci> ghci| 
+<interactive>:2124:3: error:
+    parse error (possibly incorrect indentation or mismatched brackets)
+ghci| ghci> [23,56,56,46]
+#+end_example
