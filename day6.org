@@ -99,7 +99,7 @@ print(len([(int("".join([i for i in list(map((lambda line : line.strip()), open(
   let testComp = zip allDist distList
   let resultList = map compDist testComp
 
-  :{
+  :{ --needed for ghci, which is what org-babel uses
   productOfList [] = 1
   productOfList (x:xs) = x * productOfList xs
   :}

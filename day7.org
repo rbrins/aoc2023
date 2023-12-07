@@ -1,0 +1,2120 @@
+
+
+
+* Part 1 
+
+248447920 to low
+252052080
+
+#+BEGIN_SRC python :results output
+  
+puzzleInput = list(map((lambda line : line.strip()), open("./day7.txt", "r").readlines()))
+
+cardValues = {"A":13, "K":12, "Q":11, "J":10, "T":9, "9":8, "8":7, "7":6, "6":5, "5":4, "4":3, "3":2, "2":1}
+
+class camelHand:
+
+    def __init__(self, handBid, rank=0):
+        self.hand = handBid[0]
+        self.bid = int(handBid[1])
+        self.rank = rank
+
+        self.handDict = {}
+        for i in self.hand:
+            if i in self.handDict.keys():
+              self.handDict[i] += 1
+            else:
+              self.handDict[i] = 1
+
+        self.values = list(self.handDict.values())
+ 
+        self.handType = self.checkFiveKind() 
+
+        self.secondary = self.getSecondOrder()
+        self.prime_value = (self.handType * 10000000000) + self.secondary
+
+ 
+
+    def __str__(self):
+        if self.rank:
+            return f'Hand: {self.hand}, Bid: {self.bid}, Hand Type: {self.handType}, Rank: {self.rank}'
+        return f'Hand: {self.hand}, Bid: {self.bid}, Hand Type: {self.handType}, Prime_value: {self.prime_value}'
+
+    def checkFiveKind(self):     
+        if len(self.handDict) == 1:
+        #    print("is 5 of a kind")
+            return 7
+        return self.checkFourKind()
+
+    def checkFourKind(self):
+        if 4 in self.values:
+        #    print("is 4 of a kind")
+            return 6
+        return self.checkFullHouse()
+        
+    def checkFullHouse(self):
+        if (len(self.handDict) == 2) and (3 in self.values):
+        #    print("is full house")
+            return 5
+        return self.checkThreeOfAKind()
+
+    def checkThreeOfAKind(self):
+        if 3 in self.values:
+        #    print("is 3 of kind")
+            return 4
+        return self.checkTwoPair()
+
+    def checkTwoPair(self):
+        if (len(self.handDict) == 3) and (2 in self.values):
+        #    print("is two pair")
+            return 3
+        return self.checkOnePair()
+
+    def checkOnePair(self):
+        if 2 in self.values:
+        #    print("is one pair")
+            return 2
+        else:
+            return 1
+
+    def getSecondOrder(self):
+        secValue = 0
+        count = 5
+        decimalPlace = 100000000
+        for i in self.hand:
+            secValue += ((decimalPlace) * cardValues[i])
+            count -= 1
+            decimalPlace = int(decimalPlace / 100)
+        return secValue
+
+    def __lt__(self, other):
+        return self.prime_value < other.prime_value
+
+    def calcWinnings(self):
+        return self.rank * self.bid
+
+            
+gameLen = len(puzzleInput)
+
+handBids = [camelHand(i.split(" ")) for i in puzzleInput]
+handBids.sort()
+
+count = 1
+
+totalWinnings = 0
+for handInfo in handBids:
+    handInfo.rank = count
+    winnings = handInfo.calcWinnings()
+    print(handInfo)
+    print(" Winnings: {}".format(winnings))
+    totalWinnings += handInfo.calcWinnings()
+    count += 1
+
+print(totalWinnings)
+
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+Hand: 248QK, Bid: 847, Hand Type: 1, Rank: 1
+ Winnings: 847
+Hand: 24K86, Bid: 244, Hand Type: 1, Rank: 2
+ Winnings: 488
+Hand: 2586Q, Bid: 157, Hand Type: 1, Rank: 3
+ Winnings: 471
+Hand: 267Q4, Bid: 9, Hand Type: 1, Rank: 4
+ Winnings: 36
+Hand: 2748K, Bid: 241, Hand Type: 1, Rank: 5
+ Winnings: 1205
+Hand: 2754Q, Bid: 685, Hand Type: 1, Rank: 6
+ Winnings: 4110
+Hand: 2835K, Bid: 662, Hand Type: 1, Rank: 7
+ Winnings: 4634
+Hand: 29JA8, Bid: 159, Hand Type: 1, Rank: 8
+ Winnings: 1272
+Hand: 2T3A8, Bid: 562, Hand Type: 1, Rank: 9
+ Winnings: 5058
+Hand: 2JQ4A, Bid: 480, Hand Type: 1, Rank: 10
+ Winnings: 4800
+Hand: 2KT54, Bid: 217, Hand Type: 1, Rank: 11
+ Winnings: 2387
+Hand: 327A9, Bid: 243, Hand Type: 1, Rank: 12
+ Winnings: 2916
+Hand: 342TA, Bid: 62, Hand Type: 1, Rank: 13
+ Winnings: 806
+Hand: 34Q92, Bid: 641, Hand Type: 1, Rank: 14
+ Winnings: 8974
+Hand: 35TQA, Bid: 6, Hand Type: 1, Rank: 15
+ Winnings: 90
+Hand: 36T95, Bid: 193, Hand Type: 1, Rank: 16
+ Winnings: 3088
+Hand: 36QT5, Bid: 724, Hand Type: 1, Rank: 17
+ Winnings: 12308
+Hand: 37968, Bid: 834, Hand Type: 1, Rank: 18
+ Winnings: 15012
+Hand: 3856Q, Bid: 539, Hand Type: 1, Rank: 19
+ Winnings: 10241
+Hand: 386QK, Bid: 722, Hand Type: 1, Rank: 20
+ Winnings: 14440
+Hand: 38J2K, Bid: 36, Hand Type: 1, Rank: 21
+ Winnings: 756
+Hand: 38QJA, Bid: 57, Hand Type: 1, Rank: 22
+ Winnings: 1254
+Hand: 398J7, Bid: 137, Hand Type: 1, Rank: 23
+ Winnings: 3151
+Hand: 398K5, Bid: 618, Hand Type: 1, Rank: 24
+ Winnings: 14832
+Hand: 39Q26, Bid: 247, Hand Type: 1, Rank: 25
+ Winnings: 6175
+Hand: 3TA6Q, Bid: 133, Hand Type: 1, Rank: 26
+ Winnings: 3458
+Hand: 3J8A6, Bid: 958, Hand Type: 1, Rank: 27
+ Winnings: 25866
+Hand: 3Q74K, Bid: 555, Hand Type: 1, Rank: 28
+ Winnings: 15540
+Hand: 3QAJ4, Bid: 347, Hand Type: 1, Rank: 29
+ Winnings: 10063
+Hand: 3K8TA, Bid: 952, Hand Type: 1, Rank: 30
+ Winnings: 28560
+Hand: 42Q6T, Bid: 396, Hand Type: 1, Rank: 31
+ Winnings: 12276
+Hand: 43Q6K, Bid: 91, Hand Type: 1, Rank: 32
+ Winnings: 2912
+Hand: 462QJ, Bid: 112, Hand Type: 1, Rank: 33
+ Winnings: 3696
+Hand: 46JT7, Bid: 42, Hand Type: 1, Rank: 34
+ Winnings: 1428
+Hand: 47JK9, Bid: 785, Hand Type: 1, Rank: 35
+ Winnings: 27475
+Hand: 48AJT, Bid: 507, Hand Type: 1, Rank: 36
+ Winnings: 18252
+Hand: 49K5T, Bid: 301, Hand Type: 1, Rank: 37
+ Winnings: 11137
+Hand: 4J58Q, Bid: 680, Hand Type: 1, Rank: 38
+ Winnings: 25840
+Hand: 4Q3J6, Bid: 953, Hand Type: 1, Rank: 39
+ Winnings: 37167
+Hand: 4Q962, Bid: 671, Hand Type: 1, Rank: 40
+ Winnings: 26840
+Hand: 4QKJ6, Bid: 508, Hand Type: 1, Rank: 41
+ Winnings: 20828
+Hand: 4A65T, Bid: 115, Hand Type: 1, Rank: 42
+ Winnings: 4830
+Hand: 5384A, Bid: 924, Hand Type: 1, Rank: 43
+ Winnings: 39732
+Hand: 542K6, Bid: 397, Hand Type: 1, Rank: 44
+ Winnings: 17468
+Hand: 563T8, Bid: 50, Hand Type: 1, Rank: 45
+ Winnings: 2250
+Hand: 5679Q, Bid: 129, Hand Type: 1, Rank: 46
+ Winnings: 5934
+Hand: 578QA, Bid: 337, Hand Type: 1, Rank: 47
+ Winnings: 15839
+Hand: 57A9Q, Bid: 665, Hand Type: 1, Rank: 48
+ Winnings: 31920
+Hand: 589Q4, Bid: 688, Hand Type: 1, Rank: 49
+ Winnings: 33712
+Hand: 596K7, Bid: 566, Hand Type: 1, Rank: 50
+ Winnings: 28300
+Hand: 59JK6, Bid: 675, Hand Type: 1, Rank: 51
+ Winnings: 34425
+Hand: 59Q23, Bid: 522, Hand Type: 1, Rank: 52
+ Winnings: 27144
+Hand: 5TK4J, Bid: 506, Hand Type: 1, Rank: 53
+ Winnings: 26818
+Hand: 5Q963, Bid: 816, Hand Type: 1, Rank: 54
+ Winnings: 44064
+Hand: 5AQ6T, Bid: 503, Hand Type: 1, Rank: 55
+ Winnings: 27665
+Hand: 6295A, Bid: 226, Hand Type: 1, Rank: 56
+ Winnings: 12656
+Hand: 6429A, Bid: 922, Hand Type: 1, Rank: 57
+ Winnings: 52554
+Hand: 64A57, Bid: 583, Hand Type: 1, Rank: 58
+ Winnings: 33814
+Hand: 654Q8, Bid: 888, Hand Type: 1, Rank: 59
+ Winnings: 52392
+Hand: 6598K, Bid: 910, Hand Type: 1, Rank: 60
+ Winnings: 54600
+Hand: 65A9K, Bid: 842, Hand Type: 1, Rank: 61
+ Winnings: 51362
+Hand: 678QA, Bid: 388, Hand Type: 1, Rank: 62
+ Winnings: 24056
+Hand: 684TA, Bid: 970, Hand Type: 1, Rank: 63
+ Winnings: 61110
+Hand: 698QA, Bid: 573, Hand Type: 1, Rank: 64
+ Winnings: 36672
+Hand: 6J2Q7, Bid: 803, Hand Type: 1, Rank: 65
+ Winnings: 52195
+Hand: 6J537, Bid: 885, Hand Type: 1, Rank: 66
+ Winnings: 58410
+Hand: 6J9K3, Bid: 808, Hand Type: 1, Rank: 67
+ Winnings: 54136
+Hand: 72689, Bid: 353, Hand Type: 1, Rank: 68
+ Winnings: 24004
+Hand: 72KQ3, Bid: 826, Hand Type: 1, Rank: 69
+ Winnings: 56994
+Hand: 7423J, Bid: 2, Hand Type: 1, Rank: 70
+ Winnings: 140
+Hand: 743J5, Bid: 292, Hand Type: 1, Rank: 71
+ Winnings: 20732
+Hand: 765Q2, Bid: 521, Hand Type: 1, Rank: 72
+ Winnings: 37512
+Hand: 769T4, Bid: 120, Hand Type: 1, Rank: 73
+ Winnings: 8760
+Hand: 769AJ, Bid: 867, Hand Type: 1, Rank: 74
+ Winnings: 64158
+Hand: 793K4, Bid: 256, Hand Type: 1, Rank: 75
+ Winnings: 19200
+Hand: 795AJ, Bid: 753, Hand Type: 1, Rank: 76
+ Winnings: 57228
+Hand: 79A56, Bid: 471, Hand Type: 1, Rank: 77
+ Winnings: 36267
+Hand: 7T543, Bid: 131, Hand Type: 1, Rank: 78
+ Winnings: 10218
+Hand: 7J3TQ, Bid: 589, Hand Type: 1, Rank: 79
+ Winnings: 46531
+Hand: 7J64Q, Bid: 871, Hand Type: 1, Rank: 80
+ Winnings: 69680
+Hand: 7JA65, Bid: 218, Hand Type: 1, Rank: 81
+ Winnings: 17658
+Hand: 7K42T, Bid: 594, Hand Type: 1, Rank: 82
+ Winnings: 48708
+Hand: 7K468, Bid: 116, Hand Type: 1, Rank: 83
+ Winnings: 9628
+Hand: 7K5TJ, Bid: 845, Hand Type: 1, Rank: 84
+ Winnings: 70980
+Hand: 7K63J, Bid: 198, Hand Type: 1, Rank: 85
+ Winnings: 16830
+Hand: 7K6Q8, Bid: 40, Hand Type: 1, Rank: 86
+ Winnings: 3440
+Hand: 7AT65, Bid: 723, Hand Type: 1, Rank: 87
+ Winnings: 62901
+Hand: 824T6, Bid: 496, Hand Type: 1, Rank: 88
+ Winnings: 43648
+Hand: 82597, Bid: 890, Hand Type: 1, Rank: 89
+ Winnings: 79210
+Hand: 82936, Bid: 584, Hand Type: 1, Rank: 90
+ Winnings: 52560
+Hand: 83657, Bid: 892, Hand Type: 1, Rank: 91
+ Winnings: 81172
+Hand: 84JKA, Bid: 629, Hand Type: 1, Rank: 92
+ Winnings: 57868
+Hand: 86439, Bid: 66, Hand Type: 1, Rank: 93
+ Winnings: 6138
+Hand: 8T5QA, Bid: 848, Hand Type: 1, Rank: 94
+ Winnings: 79712
+Hand: 8TJ93, Bid: 155, Hand Type: 1, Rank: 95
+ Winnings: 14725
+Hand: 8TJA7, Bid: 168, Hand Type: 1, Rank: 96
+ Winnings: 16128
+Hand: 8Q93T, Bid: 825, Hand Type: 1, Rank: 97
+ Winnings: 80025
+Hand: 8K6T4, Bid: 33, Hand Type: 1, Rank: 98
+ Winnings: 3234
+Hand: 8KT2J, Bid: 446, Hand Type: 1, Rank: 99
+ Winnings: 44154
+Hand: 8KQJ4, Bid: 733, Hand Type: 1, Rank: 100
+ Winnings: 73300
+Hand: 928J3, Bid: 804, Hand Type: 1, Rank: 101
+ Winnings: 81204
+Hand: 967JQ, Bid: 771, Hand Type: 1, Rank: 102
+ Winnings: 78642
+Hand: 96TA2, Bid: 706, Hand Type: 1, Rank: 103
+ Winnings: 72718
+Hand: 97KJ6, Bid: 524, Hand Type: 1, Rank: 104
+ Winnings: 54496
+Hand: 984JA, Bid: 624, Hand Type: 1, Rank: 105
+ Winnings: 65520
+Hand: 98563, Bid: 113, Hand Type: 1, Rank: 106
+ Winnings: 11978
+Hand: 98J67, Bid: 907, Hand Type: 1, Rank: 107
+ Winnings: 97049
+Hand: 9T4QK, Bid: 669, Hand Type: 1, Rank: 108
+ Winnings: 72252
+Hand: 9T6Q3, Bid: 413, Hand Type: 1, Rank: 109
+ Winnings: 45017
+Hand: 9TKJ8, Bid: 612, Hand Type: 1, Rank: 110
+ Winnings: 67320
+Hand: 9TAJ2, Bid: 327, Hand Type: 1, Rank: 111
+ Winnings: 36297
+Hand: 9J2T8, Bid: 255, Hand Type: 1, Rank: 112
+ Winnings: 28560
+Hand: 9JTK4, Bid: 661, Hand Type: 1, Rank: 113
+ Winnings: 74693
+Hand: 9Q538, Bid: 414, Hand Type: 1, Rank: 114
+ Winnings: 47196
+Hand: 9K523, Bid: 727, Hand Type: 1, Rank: 115
+ Winnings: 83605
+Hand: 9K7T5, Bid: 119, Hand Type: 1, Rank: 116
+ Winnings: 13804
+Hand: 9KAJ6, Bid: 987, Hand Type: 1, Rank: 117
+ Winnings: 115479
+Hand: 9A3K5, Bid: 760, Hand Type: 1, Rank: 118
+ Winnings: 89680
+Hand: T257A, Bid: 556, Hand Type: 1, Rank: 119
+ Winnings: 66164
+Hand: T3JQK, Bid: 637, Hand Type: 1, Rank: 120
+ Winnings: 76440
+Hand: T4Q67, Bid: 220, Hand Type: 1, Rank: 121
+ Winnings: 26620
+Hand: T549Q, Bid: 434, Hand Type: 1, Rank: 122
+ Winnings: 52948
+Hand: T65JK, Bid: 941, Hand Type: 1, Rank: 123
+ Winnings: 115743
+Hand: T725Q, Bid: 358, Hand Type: 1, Rank: 124
+ Winnings: 44392
+Hand: T7982, Bid: 5, Hand Type: 1, Rank: 125
+ Winnings: 625
+Hand: T7A2Q, Bid: 149, Hand Type: 1, Rank: 126
+ Winnings: 18774
+Hand: T7AJ6, Bid: 204, Hand Type: 1, Rank: 127
+ Winnings: 25908
+Hand: T8AJ3, Bid: 606, Hand Type: 1, Rank: 128
+ Winnings: 77568
+Hand: TJ524, Bid: 818, Hand Type: 1, Rank: 129
+ Winnings: 105522
+Hand: TJ952, Bid: 913, Hand Type: 1, Rank: 130
+ Winnings: 118690
+Hand: TJQ8A, Bid: 806, Hand Type: 1, Rank: 131
+ Winnings: 105586
+Hand: TQ2K3, Bid: 492, Hand Type: 1, Rank: 132
+ Winnings: 64944
+Hand: TK498, Bid: 48, Hand Type: 1, Rank: 133
+ Winnings: 6384
+Hand: J375Q, Bid: 873, Hand Type: 1, Rank: 134
+ Winnings: 116982
+Hand: J423Q, Bid: 289, Hand Type: 1, Rank: 135
+ Winnings: 39015
+Hand: J4896, Bid: 531, Hand Type: 1, Rank: 136
+ Winnings: 72216
+Hand: J5392, Bid: 537, Hand Type: 1, Rank: 137
+ Winnings: 73569
+Hand: J6T42, Bid: 529, Hand Type: 1, Rank: 138
+ Winnings: 73002
+Hand: JT4A2, Bid: 950, Hand Type: 1, Rank: 139
+ Winnings: 132050
+Hand: JTK34, Bid: 365, Hand Type: 1, Rank: 140
+ Winnings: 51100
+Hand: JK47Q, Bid: 968, Hand Type: 1, Rank: 141
+ Winnings: 136488
+Hand: JKQ96, Bid: 696, Hand Type: 1, Rank: 142
+ Winnings: 98832
+Hand: JA5TK, Bid: 125, Hand Type: 1, Rank: 143
+ Winnings: 17875
+Hand: JA734, Bid: 443, Hand Type: 1, Rank: 144
+ Winnings: 63792
+Hand: JA859, Bid: 21, Hand Type: 1, Rank: 145
+ Winnings: 3045
+Hand: JATQ7, Bid: 468, Hand Type: 1, Rank: 146
+ Winnings: 68328
+Hand: Q2497, Bid: 264, Hand Type: 1, Rank: 147
+ Winnings: 38808
+Hand: Q3285, Bid: 257, Hand Type: 1, Rank: 148
+ Winnings: 38036
+Hand: Q3KJ2, Bid: 29, Hand Type: 1, Rank: 149
+ Winnings: 4321
+Hand: Q435J, Bid: 20, Hand Type: 1, Rank: 150
+ Winnings: 3000
+Hand: Q48J3, Bid: 260, Hand Type: 1, Rank: 151
+ Winnings: 39260
+Hand: Q4A9K, Bid: 324, Hand Type: 1, Rank: 152
+ Winnings: 49248
+Hand: Q673J, Bid: 697, Hand Type: 1, Rank: 153
+ Winnings: 106641
+Hand: Q68A3, Bid: 479, Hand Type: 1, Rank: 154
+ Winnings: 73766
+Hand: Q6KT7, Bid: 820, Hand Type: 1, Rank: 155
+ Winnings: 127100
+Hand: Q7925, Bid: 117, Hand Type: 1, Rank: 156
+ Winnings: 18252
+Hand: Q7985, Bid: 718, Hand Type: 1, Rank: 157
+ Winnings: 112726
+Hand: Q92K5, Bid: 469, Hand Type: 1, Rank: 158
+ Winnings: 74102
+Hand: QT46J, Bid: 864, Hand Type: 1, Rank: 159
+ Winnings: 137376
+Hand: QT7J5, Bid: 777, Hand Type: 1, Rank: 160
+ Winnings: 124320
+Hand: QTJ87, Bid: 956, Hand Type: 1, Rank: 161
+ Winnings: 153916
+Hand: QJ846, Bid: 700, Hand Type: 1, Rank: 162
+ Winnings: 113400
+Hand: QJ943, Bid: 181, Hand Type: 1, Rank: 163
+ Winnings: 29503
+Hand: QJK65, Bid: 356, Hand Type: 1, Rank: 164
+ Winnings: 58384
+Hand: QJAKT, Bid: 145, Hand Type: 1, Rank: 165
+ Winnings: 23925
+Hand: K253A, Bid: 971, Hand Type: 1, Rank: 166
+ Winnings: 161186
+Hand: K3QJ6, Bid: 43, Hand Type: 1, Rank: 167
+ Winnings: 7181
+Hand: K3A4J, Bid: 94, Hand Type: 1, Rank: 168
+ Winnings: 15792
+Hand: K62Q9, Bid: 773, Hand Type: 1, Rank: 169
+ Winnings: 130637
+Hand: K67T8, Bid: 197, Hand Type: 1, Rank: 170
+ Winnings: 33490
+Hand: K8243, Bid: 923, Hand Type: 1, Rank: 171
+ Winnings: 157833
+Hand: K8QA7, Bid: 373, Hand Type: 1, Rank: 172
+ Winnings: 64156
+Hand: K93QA, Bid: 311, Hand Type: 1, Rank: 173
+ Winnings: 53803
+Hand: K9AT3, Bid: 859, Hand Type: 1, Rank: 174
+ Winnings: 149466
+Hand: KJ69T, Bid: 228, Hand Type: 1, Rank: 175
+ Winnings: 39900
+Hand: KJA53, Bid: 676, Hand Type: 1, Rank: 176
+ Winnings: 118976
+Hand: KQ549, Bid: 473, Hand Type: 1, Rank: 177
+ Winnings: 83721
+Hand: KA832, Bid: 578, Hand Type: 1, Rank: 178
+ Winnings: 102884
+Hand: A3479, Bid: 107, Hand Type: 1, Rank: 179
+ Winnings: 19153
+Hand: A364K, Bid: 592, Hand Type: 1, Rank: 180
+ Winnings: 106560
+Hand: A36J9, Bid: 928, Hand Type: 1, Rank: 181
+ Winnings: 167968
+Hand: A64J8, Bid: 385, Hand Type: 1, Rank: 182
+ Winnings: 70070
+Hand: A7298, Bid: 811, Hand Type: 1, Rank: 183
+ Winnings: 148413
+Hand: A7K25, Bid: 790, Hand Type: 1, Rank: 184
+ Winnings: 145360
+Hand: A9T28, Bid: 633, Hand Type: 1, Rank: 185
+ Winnings: 117105
+Hand: AT98K, Bid: 628, Hand Type: 1, Rank: 186
+ Winnings: 116808
+Hand: ATQ32, Bid: 171, Hand Type: 1, Rank: 187
+ Winnings: 31977
+Hand: ATK69, Bid: 249, Hand Type: 1, Rank: 188
+ Winnings: 46812
+Hand: ATK7Q, Bid: 185, Hand Type: 1, Rank: 189
+ Winnings: 34965
+Hand: AJQ3K, Bid: 836, Hand Type: 1, Rank: 190
+ Winnings: 158840
+Hand: AQ382, Bid: 10, Hand Type: 1, Rank: 191
+ Winnings: 1910
+Hand: AQ52K, Bid: 194, Hand Type: 1, Rank: 192
+ Winnings: 37248
+Hand: AQ829, Bid: 830, Hand Type: 1, Rank: 193
+ Winnings: 160190
+Hand: 229Q5, Bid: 761, Hand Type: 2, Rank: 194
+ Winnings: 147634
+Hand: 2334T, Bid: 664, Hand Type: 2, Rank: 195
+ Winnings: 129480
+Hand: 23593, Bid: 608, Hand Type: 2, Rank: 196
+ Winnings: 119168
+Hand: 24A64, Bid: 561, Hand Type: 2, Rank: 197
+ Winnings: 110517
+Hand: 25Q42, Bid: 659, Hand Type: 2, Rank: 198
+ Winnings: 130482
+Hand: 25K5T, Bid: 401, Hand Type: 2, Rank: 199
+ Winnings: 79799
+Hand: 26855, Bid: 462, Hand Type: 2, Rank: 200
+ Winnings: 92400
+Hand: 27KTT, Bid: 973, Hand Type: 2, Rank: 201
+ Winnings: 195573
+Hand: 27AA8, Bid: 17, Hand Type: 2, Rank: 202
+ Winnings: 3434
+Hand: 28744, Bid: 164, Hand Type: 2, Rank: 203
+ Winnings: 33292
+Hand: 28966, Bid: 921, Hand Type: 2, Rank: 204
+ Winnings: 187884
+Hand: 28AK8, Bid: 235, Hand Type: 2, Rank: 205
+ Winnings: 48175
+Hand: 2T5KK, Bid: 298, Hand Type: 2, Rank: 206
+ Winnings: 61388
+Hand: 2J247, Bid: 319, Hand Type: 2, Rank: 207
+ Winnings: 66033
+Hand: 2J445, Bid: 713, Hand Type: 2, Rank: 208
+ Winnings: 148304
+Hand: 2Q382, Bid: 620, Hand Type: 2, Rank: 209
+ Winnings: 129580
+Hand: 2Q8AQ, Bid: 942, Hand Type: 2, Rank: 210
+ Winnings: 197820
+Hand: 2QTT9, Bid: 542, Hand Type: 2, Rank: 211
+ Winnings: 114362
+Hand: 2KTT5, Bid: 147, Hand Type: 2, Rank: 212
+ Winnings: 31164
+Hand: 2AQQ4, Bid: 269, Hand Type: 2, Rank: 213
+ Winnings: 57297
+Hand: 3277A, Bid: 28, Hand Type: 2, Rank: 214
+ Winnings: 5992
+Hand: 33T4J, Bid: 281, Hand Type: 2, Rank: 215
+ Winnings: 60415
+Hand: 33J45, Bid: 886, Hand Type: 2, Rank: 216
+ Winnings: 191376
+Hand: 343Q7, Bid: 406, Hand Type: 2, Rank: 217
+ Winnings: 88102
+Hand: 344JQ, Bid: 18, Hand Type: 2, Rank: 218
+ Winnings: 3924
+Hand: 34TTA, Bid: 679, Hand Type: 2, Rank: 219
+ Winnings: 148701
+Hand: 363J7, Bid: 603, Hand Type: 2, Rank: 220
+ Winnings: 132660
+Hand: 37KQQ, Bid: 714, Hand Type: 2, Rank: 221
+ Winnings: 157794
+Hand: 3835K, Bid: 502, Hand Type: 2, Rank: 222
+ Winnings: 111444
+Hand: 39327, Bid: 390, Hand Type: 2, Rank: 223
+ Winnings: 86970
+Hand: 39A69, Bid: 90, Hand Type: 2, Rank: 224
+ Winnings: 20160
+Hand: 3TA9A, Bid: 460, Hand Type: 2, Rank: 225
+ Winnings: 103500
+Hand: 3J342, Bid: 925, Hand Type: 2, Rank: 226
+ Winnings: 209050
+Hand: 3Q397, Bid: 619, Hand Type: 2, Rank: 227
+ Winnings: 140513
+Hand: 3Q77J, Bid: 295, Hand Type: 2, Rank: 228
+ Winnings: 67260
+Hand: 3K693, Bid: 585, Hand Type: 2, Rank: 229
+ Winnings: 133965
+Hand: 422TK, Bid: 768, Hand Type: 2, Rank: 230
+ Winnings: 176640
+Hand: 42643, Bid: 364, Hand Type: 2, Rank: 231
+ Winnings: 84084
+Hand: 42A7A, Bid: 80, Hand Type: 2, Rank: 232
+ Winnings: 18560
+Hand: 432KK, Bid: 726, Hand Type: 2, Rank: 233
+ Winnings: 169158
+Hand: 4339J, Bid: 541, Hand Type: 2, Rank: 234
+ Winnings: 126594
+Hand: 44T75, Bid: 642, Hand Type: 2, Rank: 235
+ Winnings: 150870
+Hand: 453JJ, Bid: 683, Hand Type: 2, Rank: 236
+ Winnings: 161188
+Hand: 46TQQ, Bid: 497, Hand Type: 2, Rank: 237
+ Winnings: 117789
+Hand: 46J56, Bid: 465, Hand Type: 2, Rank: 238
+ Winnings: 110670
+Hand: 4754K, Bid: 177, Hand Type: 2, Rank: 239
+ Winnings: 42303
+Hand: 483JJ, Bid: 170, Hand Type: 2, Rank: 240
+ Winnings: 40800
+Hand: 486A6, Bid: 978, Hand Type: 2, Rank: 241
+ Winnings: 235698
+Hand: 48TT6, Bid: 780, Hand Type: 2, Rank: 242
+ Winnings: 188760
+Hand: 49J24, Bid: 71, Hand Type: 2, Rank: 243
+ Winnings: 17253
+Hand: 4T525, Bid: 974, Hand Type: 2, Rank: 244
+ Winnings: 237656
+Hand: 4J684, Bid: 391, Hand Type: 2, Rank: 245
+ Winnings: 95795
+Hand: 4J834, Bid: 964, Hand Type: 2, Rank: 246
+ Winnings: 237144
+Hand: 4Q479, Bid: 431, Hand Type: 2, Rank: 247
+ Winnings: 106457
+Hand: 4K6KJ, Bid: 349, Hand Type: 2, Rank: 248
+ Winnings: 86552
+Hand: 53AJA, Bid: 371, Hand Type: 2, Rank: 249
+ Winnings: 92379
+Hand: 54696, Bid: 699, Hand Type: 2, Rank: 250
+ Winnings: 174750
+Hand: 54J75, Bid: 186, Hand Type: 2, Rank: 251
+ Winnings: 46686
+Hand: 5594J, Bid: 4, Hand Type: 2, Rank: 252
+ Winnings: 1008
+Hand: 55TJ3, Bid: 151, Hand Type: 2, Rank: 253
+ Winnings: 38203
+Hand: 55J4K, Bid: 357, Hand Type: 2, Rank: 254
+ Winnings: 90678
+Hand: 566J3, Bid: 729, Hand Type: 2, Rank: 255
+ Winnings: 185895
+Hand: 567AA, Bid: 219, Hand Type: 2, Rank: 256
+ Winnings: 56064
+Hand: 56J54, Bid: 438, Hand Type: 2, Rank: 257
+ Winnings: 112566
+Hand: 56JA5, Bid: 701, Hand Type: 2, Rank: 258
+ Winnings: 180858
+Hand: 56A64, Bid: 487, Hand Type: 2, Rank: 259
+ Winnings: 126133
+Hand: 573J7, Bid: 221, Hand Type: 2, Rank: 260
+ Winnings: 57460
+Hand: 573Q5, Bid: 934, Hand Type: 2, Rank: 261
+ Winnings: 243774
+Hand: 5772A, Bid: 206, Hand Type: 2, Rank: 262
+ Winnings: 53972
+Hand: 57989, Bid: 109, Hand Type: 2, Rank: 263
+ Winnings: 28667
+Hand: 57TAA, Bid: 891, Hand Type: 2, Rank: 264
+ Winnings: 235224
+Hand: 599QJ, Bid: 395, Hand Type: 2, Rank: 265
+ Winnings: 104675
+Hand: 59JQQ, Bid: 240, Hand Type: 2, Rank: 266
+ Winnings: 63840
+Hand: 59QQ7, Bid: 939, Hand Type: 2, Rank: 267
+ Winnings: 250713
+Hand: 5T5KQ, Bid: 805, Hand Type: 2, Rank: 268
+ Winnings: 215740
+Hand: 5T6JT, Bid: 751, Hand Type: 2, Rank: 269
+ Winnings: 202019
+Hand: 5TT28, Bid: 599, Hand Type: 2, Rank: 270
+ Winnings: 161730
+Hand: 5J59A, Bid: 421, Hand Type: 2, Rank: 271
+ Winnings: 114091
+Hand: 5JK35, Bid: 369, Hand Type: 2, Rank: 272
+ Winnings: 100368
+Hand: 5Q5A7, Bid: 132, Hand Type: 2, Rank: 273
+ Winnings: 36036
+Hand: 5Q82Q, Bid: 988, Hand Type: 2, Rank: 274
+ Winnings: 270712
+Hand: 5QJ44, Bid: 670, Hand Type: 2, Rank: 275
+ Winnings: 184250
+Hand: 5K7K6, Bid: 63, Hand Type: 2, Rank: 276
+ Winnings: 17388
+Hand: 5A66J, Bid: 261, Hand Type: 2, Rank: 277
+ Winnings: 72297
+Hand: 63828, Bid: 489, Hand Type: 2, Rank: 278
+ Winnings: 135942
+Hand: 6625J, Bid: 338, Hand Type: 2, Rank: 279
+ Winnings: 94302
+Hand: 6639J, Bid: 898, Hand Type: 2, Rank: 280
+ Winnings: 251440
+Hand: 668A9, Bid: 227, Hand Type: 2, Rank: 281
+ Winnings: 63787
+Hand: 6T4Q6, Bid: 856, Hand Type: 2, Rank: 282
+ Winnings: 241392
+Hand: 6TTQ9, Bid: 990, Hand Type: 2, Rank: 283
+ Winnings: 280170
+Hand: 6TJ6K, Bid: 899, Hand Type: 2, Rank: 284
+ Winnings: 255316
+Hand: 6J434, Bid: 47, Hand Type: 2, Rank: 285
+ Winnings: 13395
+Hand: 6JK36, Bid: 386, Hand Type: 2, Rank: 286
+ Winnings: 110396
+Hand: 6JA22, Bid: 162, Hand Type: 2, Rank: 287
+ Winnings: 46494
+Hand: 6JA99, Bid: 35, Hand Type: 2, Rank: 288
+ Winnings: 10080
+Hand: 6KKQT, Bid: 354, Hand Type: 2, Rank: 289
+ Winnings: 102306
+Hand: 6A4Q4, Bid: 78, Hand Type: 2, Rank: 290
+ Winnings: 22620
+Hand: 6AT55, Bid: 689, Hand Type: 2, Rank: 291
+ Winnings: 200499
+Hand: 6AT62, Bid: 427, Hand Type: 2, Rank: 292
+ Winnings: 124684
+Hand: 722Q3, Bid: 513, Hand Type: 2, Rank: 293
+ Winnings: 150309
+Hand: 74297, Bid: 851, Hand Type: 2, Rank: 294
+ Winnings: 250194
+Hand: 7437J, Bid: 769, Hand Type: 2, Rank: 295
+ Winnings: 226855
+Hand: 7488K, Bid: 175, Hand Type: 2, Rank: 296
+ Winnings: 51800
+Hand: 74J67, Bid: 209, Hand Type: 2, Rank: 297
+ Winnings: 62073
+Hand: 75QK5, Bid: 499, Hand Type: 2, Rank: 298
+ Winnings: 148702
+Hand: 766J4, Bid: 553, Hand Type: 2, Rank: 299
+ Winnings: 165347
+Hand: 77T83, Bid: 647, Hand Type: 2, Rank: 300
+ Winnings: 194100
+Hand: 77K39, Bid: 681, Hand Type: 2, Rank: 301
+ Winnings: 204981
+Hand: 78Q76, Bid: 548, Hand Type: 2, Rank: 302
+ Winnings: 165496
+Hand: 78A27, Bid: 766, Hand Type: 2, Rank: 303
+ Winnings: 232098
+Hand: 799JA, Bid: 596, Hand Type: 2, Rank: 304
+ Winnings: 181184
+Hand: 79J96, Bid: 895, Hand Type: 2, Rank: 305
+ Winnings: 272975
+Hand: 7T994, Bid: 989, Hand Type: 2, Rank: 306
+ Winnings: 302634
+Hand: 7TAA9, Bid: 687, Hand Type: 2, Rank: 307
+ Winnings: 210909
+Hand: 7QJ2Q, Bid: 237, Hand Type: 2, Rank: 308
+ Winnings: 72996
+Hand: 7K443, Bid: 601, Hand Type: 2, Rank: 309
+ Winnings: 185709
+Hand: 7K79T, Bid: 653, Hand Type: 2, Rank: 310
+ Winnings: 202430
+Hand: 7KQJQ, Bid: 505, Hand Type: 2, Rank: 311
+ Winnings: 157055
+Hand: 7KKJ2, Bid: 79, Hand Type: 2, Rank: 312
+ Winnings: 24648
+Hand: 7AK2K, Bid: 650, Hand Type: 2, Rank: 313
+ Winnings: 203450
+Hand: 82293, Bid: 224, Hand Type: 2, Rank: 314
+ Winnings: 70336
+Hand: 82T2J, Bid: 425, Hand Type: 2, Rank: 315
+ Winnings: 133875
+Hand: 833TK, Bid: 380, Hand Type: 2, Rank: 316
+ Winnings: 120080
+Hand: 85ATA, Bid: 986, Hand Type: 2, Rank: 317
+ Winnings: 312562
+Hand: 87J73, Bid: 276, Hand Type: 2, Rank: 318
+ Winnings: 87768
+Hand: 87JT7, Bid: 744, Hand Type: 2, Rank: 319
+ Winnings: 237336
+Hand: 8863K, Bid: 271, Hand Type: 2, Rank: 320
+ Winnings: 86720
+Hand: 8955K, Bid: 138, Hand Type: 2, Rank: 321
+ Winnings: 44298
+Hand: 89747, Bid: 381, Hand Type: 2, Rank: 322
+ Winnings: 122682
+Hand: 8J428, Bid: 855, Hand Type: 2, Rank: 323
+ Winnings: 276165
+Hand: 8J6J5, Bid: 187, Hand Type: 2, Rank: 324
+ Winnings: 60588
+Hand: 8JQ78, Bid: 866, Hand Type: 2, Rank: 325
+ Winnings: 281450
+Hand: 8QQ7J, Bid: 955, Hand Type: 2, Rank: 326
+ Winnings: 311330
+Hand: 8K58J, Bid: 915, Hand Type: 2, Rank: 327
+ Winnings: 299205
+Hand: 9334A, Bid: 887, Hand Type: 2, Rank: 328
+ Winnings: 290936
+Hand: 93763, Bid: 458, Hand Type: 2, Rank: 329
+ Winnings: 150682
+Hand: 9747K, Bid: 46, Hand Type: 2, Rank: 330
+ Winnings: 15180
+Hand: 97655, Bid: 367, Hand Type: 2, Rank: 331
+ Winnings: 121477
+Hand: 987J7, Bid: 296, Hand Type: 2, Rank: 332
+ Winnings: 98272
+Hand: 98T95, Bid: 716, Hand Type: 2, Rank: 333
+ Winnings: 238428
+Hand: 9T7T6, Bid: 765, Hand Type: 2, Rank: 334
+ Winnings: 255510
+Hand: 9TT3J, Bid: 361, Hand Type: 2, Rank: 335
+ Winnings: 120935
+Hand: 9J3KK, Bid: 491, Hand Type: 2, Rank: 336
+ Winnings: 164976
+Hand: 9J4J2, Bid: 580, Hand Type: 2, Rank: 337
+ Winnings: 195460
+Hand: 9J964, Bid: 143, Hand Type: 2, Rank: 338
+ Winnings: 48334
+Hand: 9JK44, Bid: 743, Hand Type: 2, Rank: 339
+ Winnings: 251877
+Hand: 9Q8TT, Bid: 745, Hand Type: 2, Rank: 340
+ Winnings: 253300
+Hand: 9KKJT, Bid: 152, Hand Type: 2, Rank: 341
+ Winnings: 51832
+Hand: 9KKQ2, Bid: 602, Hand Type: 2, Rank: 342
+ Winnings: 205884
+Hand: T24QQ, Bid: 409, Hand Type: 2, Rank: 343
+ Winnings: 140287
+Hand: T33JK, Bid: 389, Hand Type: 2, Rank: 344
+ Winnings: 133816
+Hand: T398T, Bid: 558, Hand Type: 2, Rank: 345
+ Winnings: 192510
+Hand: T435T, Bid: 788, Hand Type: 2, Rank: 346
+ Winnings: 272648
+Hand: T4KJT, Bid: 917, Hand Type: 2, Rank: 347
+ Winnings: 318199
+Hand: T5K5J, Bid: 451, Hand Type: 2, Rank: 348
+ Winnings: 156948
+Hand: T9596, Bid: 27, Hand Type: 2, Rank: 349
+ Winnings: 9423
+Hand: T9QQ2, Bid: 376, Hand Type: 2, Rank: 350
+ Winnings: 131600
+Hand: TT3KJ, Bid: 668, Hand Type: 2, Rank: 351
+ Winnings: 234468
+Hand: TT9JQ, Bid: 278, Hand Type: 2, Rank: 352
+ Winnings: 97856
+Hand: TJ522, Bid: 911, Hand Type: 2, Rank: 353
+ Winnings: 321583
+Hand: TJT97, Bid: 236, Hand Type: 2, Rank: 354
+ Winnings: 83544
+Hand: TQJQ8, Bid: 732, Hand Type: 2, Rank: 355
+ Winnings: 259860
+Hand: TK65T, Bid: 559, Hand Type: 2, Rank: 356
+ Winnings: 199004
+Hand: TA44J, Bid: 59, Hand Type: 2, Rank: 357
+ Winnings: 21063
+Hand: TA882, Bid: 306, Hand Type: 2, Rank: 358
+ Winnings: 109548
+Hand: TAJ6A, Bid: 520, Hand Type: 2, Rank: 359
+ Winnings: 186680
+Hand: TAJA9, Bid: 526, Hand Type: 2, Rank: 360
+ Winnings: 189360
+Hand: J2296, Bid: 817, Hand Type: 2, Rank: 361
+ Winnings: 294937
+Hand: J2782, Bid: 574, Hand Type: 2, Rank: 362
+ Winnings: 207788
+Hand: J28J6, Bid: 76, Hand Type: 2, Rank: 363
+ Winnings: 27588
+Hand: J32J5, Bid: 498, Hand Type: 2, Rank: 364
+ Winnings: 181272
+Hand: J3JQ2, Bid: 869, Hand Type: 2, Rank: 365
+ Winnings: 317185
+Hand: J3QJ5, Bid: 387, Hand Type: 2, Rank: 366
+ Winnings: 141642
+Hand: J4624, Bid: 567, Hand Type: 2, Rank: 367
+ Winnings: 208089
+Hand: J5T54, Bid: 53, Hand Type: 2, Rank: 368
+ Winnings: 19504
+Hand: J6368, Bid: 199, Hand Type: 2, Rank: 369
+ Winnings: 73431
+Hand: J668A, Bid: 919, Hand Type: 2, Rank: 370
+ Winnings: 340030
+Hand: J688A, Bid: 127, Hand Type: 2, Rank: 371
+ Winnings: 47117
+Hand: J73JK, Bid: 122, Hand Type: 2, Rank: 372
+ Winnings: 45384
+Hand: J7974, Bid: 796, Hand Type: 2, Rank: 373
+ Winnings: 296908
+Hand: J7T55, Bid: 935, Hand Type: 2, Rank: 374
+ Winnings: 349690
+Hand: J82TT, Bid: 488, Hand Type: 2, Rank: 375
+ Winnings: 183000
+Hand: J8827, Bid: 651, Hand Type: 2, Rank: 376
+ Winnings: 244776
+Hand: J9J27, Bid: 509, Hand Type: 2, Rank: 377
+ Winnings: 191893
+Hand: J9A94, Bid: 500, Hand Type: 2, Rank: 378
+ Winnings: 189000
+Hand: JT54J, Bid: 208, Hand Type: 2, Rank: 379
+ Winnings: 78832
+Hand: JT5KJ, Bid: 638, Hand Type: 2, Rank: 380
+ Winnings: 242440
+Hand: JT676, Bid: 721, Hand Type: 2, Rank: 381
+ Winnings: 274701
+Hand: JJ956, Bid: 415, Hand Type: 2, Rank: 382
+ Winnings: 158530
+Hand: JJKAT, Bid: 184, Hand Type: 2, Rank: 383
+ Winnings: 70472
+Hand: JK447, Bid: 528, Hand Type: 2, Rank: 384
+ Winnings: 202752
+Hand: JK599, Bid: 632, Hand Type: 2, Rank: 385
+ Winnings: 243320
+Hand: JK6KT, Bid: 341, Hand Type: 2, Rank: 386
+ Winnings: 131626
+Hand: JKA2J, Bid: 173, Hand Type: 2, Rank: 387
+ Winnings: 66951
+Hand: JA2QJ, Bid: 797, Hand Type: 2, Rank: 388
+ Winnings: 309236
+Hand: Q4JJ5, Bid: 333, Hand Type: 2, Rank: 389
+ Winnings: 129537
+Hand: Q564Q, Bid: 932, Hand Type: 2, Rank: 390
+ Winnings: 363480
+Hand: Q5T75, Bid: 444, Hand Type: 2, Rank: 391
+ Winnings: 173604
+Hand: Q68K6, Bid: 704, Hand Type: 2, Rank: 392
+ Winnings: 275968
+Hand: Q6K9K, Bid: 266, Hand Type: 2, Rank: 393
+ Winnings: 104538
+Hand: Q7JTT, Bid: 248, Hand Type: 2, Rank: 394
+ Winnings: 97712
+Hand: Q7JQ6, Bid: 607, Hand Type: 2, Rank: 395
+ Winnings: 239765
+Hand: Q85JQ, Bid: 378, Hand Type: 2, Rank: 396
+ Winnings: 149688
+Hand: QTQ54, Bid: 549, Hand Type: 2, Rank: 397
+ Winnings: 217953
+Hand: QJ225, Bid: 523, Hand Type: 2, Rank: 398
+ Winnings: 208154
+Hand: QJ828, Bid: 791, Hand Type: 2, Rank: 399
+ Winnings: 315609
+Hand: QJT22, Bid: 598, Hand Type: 2, Rank: 400
+ Winnings: 239200
+Hand: QJK99, Bid: 467, Hand Type: 2, Rank: 401
+ Winnings: 187267
+Hand: QQJA5, Bid: 854, Hand Type: 2, Rank: 402
+ Winnings: 343308
+Hand: QQK2J, Bid: 345, Hand Type: 2, Rank: 403
+ Winnings: 139035
+Hand: QK33T, Bid: 52, Hand Type: 2, Rank: 404
+ Winnings: 21008
+Hand: QK787, Bid: 655, Hand Type: 2, Rank: 405
+ Winnings: 265275
+Hand: QAKTK, Bid: 139, Hand Type: 2, Rank: 406
+ Winnings: 56434
+Hand: QAKJK, Bid: 310, Hand Type: 2, Rank: 407
+ Winnings: 126170
+Hand: K3374, Bid: 908, Hand Type: 2, Rank: 408
+ Winnings: 370464
+Hand: K3K9T, Bid: 336, Hand Type: 2, Rank: 409
+ Winnings: 137424
+Hand: K5977, Bid: 754, Hand Type: 2, Rank: 410
+ Winnings: 309140
+Hand: K63K5, Bid: 636, Hand Type: 2, Rank: 411
+ Winnings: 261396
+Hand: K66AT, Bid: 565, Hand Type: 2, Rank: 412
+ Winnings: 232780
+Hand: K6KJA, Bid: 273, Hand Type: 2, Rank: 413
+ Winnings: 112749
+Hand: K7464, Bid: 447, Hand Type: 2, Rank: 414
+ Winnings: 185058
+Hand: K7J7A, Bid: 946, Hand Type: 2, Rank: 415
+ Winnings: 392590
+Hand: K8892, Bid: 393, Hand Type: 2, Rank: 416
+ Winnings: 163488
+Hand: K8QK5, Bid: 15, Hand Type: 2, Rank: 417
+ Winnings: 6255
+Hand: K9T44, Bid: 457, Hand Type: 2, Rank: 418
+ Winnings: 191026
+Hand: KJ344, Bid: 876, Hand Type: 2, Rank: 419
+ Winnings: 367044
+Hand: KJJ43, Bid: 200, Hand Type: 2, Rank: 420
+ Winnings: 84000
+Hand: KK29J, Bid: 201, Hand Type: 2, Rank: 421
+ Winnings: 84621
+Hand: KA6A7, Bid: 8, Hand Type: 2, Rank: 422
+ Winnings: 3376
+Hand: KAJK8, Bid: 711, Hand Type: 2, Rank: 423
+ Winnings: 300753
+Hand: A2868, Bid: 355, Hand Type: 2, Rank: 424
+ Winnings: 150520
+Hand: A3832, Bid: 165, Hand Type: 2, Rank: 425
+ Winnings: 70125
+Hand: A4Q4T, Bid: 93, Hand Type: 2, Rank: 426
+ Winnings: 39618
+Hand: A4A3J, Bid: 360, Hand Type: 2, Rank: 427
+ Winnings: 153720
+Hand: A4A57, Bid: 552, Hand Type: 2, Rank: 428
+ Winnings: 236256
+Hand: A5AQK, Bid: 104, Hand Type: 2, Rank: 429
+ Winnings: 44616
+Hand: A64KA, Bid: 89, Hand Type: 2, Rank: 430
+ Winnings: 38270
+Hand: A73JA, Bid: 646, Hand Type: 2, Rank: 431
+ Winnings: 278426
+Hand: AT833, Bid: 617, Hand Type: 2, Rank: 432
+ Winnings: 266544
+Hand: AJ522, Bid: 286, Hand Type: 2, Rank: 433
+ Winnings: 123838
+Hand: AJ73J, Bid: 831, Hand Type: 2, Rank: 434
+ Winnings: 360654
+Hand: AJKJ4, Bid: 490, Hand Type: 2, Rank: 435
+ Winnings: 213150
+Hand: AA3TJ, Bid: 960, Hand Type: 2, Rank: 436
+ Winnings: 418560
+Hand: AAT8Q, Bid: 377, Hand Type: 2, Rank: 437
+ Winnings: 164749
+Hand: 22T44, Bid: 821, Hand Type: 3, Rank: 438
+ Winnings: 359598
+Hand: 244QQ, Bid: 581, Hand Type: 3, Rank: 439
+ Winnings: 255059
+Hand: 24884, Bid: 403, Hand Type: 3, Rank: 440
+ Winnings: 177320
+Hand: 25J52, Bid: 717, Hand Type: 3, Rank: 441
+ Winnings: 316197
+Hand: 277QQ, Bid: 234, Hand Type: 3, Rank: 442
+ Winnings: 103428
+Hand: 28J2J, Bid: 435, Hand Type: 3, Rank: 443
+ Winnings: 192705
+Hand: 28K2K, Bid: 563, Hand Type: 3, Rank: 444
+ Winnings: 249972
+Hand: 2T266, Bid: 927, Hand Type: 3, Rank: 445
+ Winnings: 412515
+Hand: 2T2TQ, Bid: 99, Hand Type: 3, Rank: 446
+ Winnings: 44154
+Hand: 2J5J2, Bid: 756, Hand Type: 3, Rank: 447
+ Winnings: 337932
+Hand: 2QAA2, Bid: 976, Hand Type: 3, Rank: 448
+ Winnings: 437248
+Hand: 2A2JA, Bid: 55, Hand Type: 3, Rank: 449
+ Winnings: 24695
+Hand: 2A82A, Bid: 25, Hand Type: 3, Rank: 450
+ Winnings: 11250
+Hand: 33676, Bid: 605, Hand Type: 3, Rank: 451
+ Winnings: 272855
+Hand: 33882, Bid: 693, Hand Type: 3, Rank: 452
+ Winnings: 313236
+Hand: 33QTQ, Bid: 657, Hand Type: 3, Rank: 453
+ Winnings: 297621
+Hand: 35358, Bid: 315, Hand Type: 3, Rank: 454
+ Winnings: 143010
+Hand: 35435, Bid: 741, Hand Type: 3, Rank: 455
+ Winnings: 337155
+Hand: 35K35, Bid: 832, Hand Type: 3, Rank: 456
+ Winnings: 379392
+Hand: 3773J, Bid: 545, Hand Type: 3, Rank: 457
+ Winnings: 249065
+Hand: 37878, Bid: 930, Hand Type: 3, Rank: 458
+ Winnings: 425940
+Hand: 37A7A, Bid: 180, Hand Type: 3, Rank: 459
+ Winnings: 82620
+Hand: 3J939, Bid: 909, Hand Type: 3, Rank: 460
+ Winnings: 418140
+Hand: 3A223, Bid: 840, Hand Type: 3, Rank: 461
+ Winnings: 387240
+Hand: 3AA35, Bid: 824, Hand Type: 3, Rank: 462
+ Winnings: 380688
+Hand: 433J4, Bid: 304, Hand Type: 3, Rank: 463
+ Winnings: 140752
+Hand: 449J9, Bid: 728, Hand Type: 3, Rank: 464
+ Winnings: 337792
+Hand: 44TKK, Bid: 179, Hand Type: 3, Rank: 465
+ Winnings: 83235
+Hand: 44JJ5, Bid: 648, Hand Type: 3, Rank: 466
+ Winnings: 301968
+Hand: 44Q22, Bid: 841, Hand Type: 3, Rank: 467
+ Winnings: 392747
+Hand: 45584, Bid: 124, Hand Type: 3, Rank: 468
+ Winnings: 58032
+Hand: 46436, Bid: 195, Hand Type: 3, Rank: 469
+ Winnings: 91455
+Hand: 4664J, Bid: 205, Hand Type: 3, Rank: 470
+ Winnings: 96350
+Hand: 46A6A, Bid: 979, Hand Type: 3, Rank: 471
+ Winnings: 461109
+Hand: 474AA, Bid: 546, Hand Type: 3, Rank: 472
+ Winnings: 257712
+Hand: 47764, Bid: 690, Hand Type: 3, Rank: 473
+ Winnings: 326370
+Hand: 48864, Bid: 416, Hand Type: 3, Rank: 474
+ Winnings: 197184
+Hand: 488K4, Bid: 30, Hand Type: 3, Rank: 475
+ Winnings: 14250
+Hand: 4T4JT, Bid: 812, Hand Type: 3, Rank: 476
+ Winnings: 386512
+Hand: 4T4KT, Bid: 368, Hand Type: 3, Rank: 477
+ Winnings: 175536
+Hand: 4T774, Bid: 999, Hand Type: 3, Rank: 478
+ Winnings: 477522
+Hand: 4Q2Q2, Bid: 677, Hand Type: 3, Rank: 479
+ Winnings: 324283
+Hand: 53523, Bid: 359, Hand Type: 3, Rank: 480
+ Winnings: 172320
+Hand: 554Q4, Bid: 762, Hand Type: 3, Rank: 481
+ Winnings: 366522
+Hand: 55T22, Bid: 658, Hand Type: 3, Rank: 482
+ Winnings: 317156
+Hand: 55QTQ, Bid: 95, Hand Type: 3, Rank: 483
+ Winnings: 45885
+Hand: 55AA3, Bid: 604, Hand Type: 3, Rank: 484
+ Winnings: 292336
+Hand: 5665Q, Bid: 649, Hand Type: 3, Rank: 485
+ Winnings: 314765
+Hand: 595J9, Bid: 307, Hand Type: 3, Rank: 486
+ Winnings: 149202
+Hand: 59956, Bid: 299, Hand Type: 3, Rank: 487
+ Winnings: 145613
+Hand: 59958, Bid: 705, Hand Type: 3, Rank: 488
+ Winnings: 344040
+Hand: 5QK5Q, Bid: 411, Hand Type: 3, Rank: 489
+ Winnings: 200979
+Hand: 5A588, Bid: 67, Hand Type: 3, Rank: 490
+ Winnings: 32830
+Hand: 65885, Bid: 532, Hand Type: 3, Rank: 491
+ Winnings: 261212
+Hand: 65886, Bid: 557, Hand Type: 3, Rank: 492
+ Winnings: 274044
+Hand: 66334, Bid: 191, Hand Type: 3, Rank: 493
+ Winnings: 94163
+Hand: 665J5, Bid: 453, Hand Type: 3, Rank: 494
+ Winnings: 223782
+Hand: 669AA, Bid: 485, Hand Type: 3, Rank: 495
+ Winnings: 240075
+Hand: 66KJK, Bid: 486, Hand Type: 3, Rank: 496
+ Winnings: 241056
+Hand: 67267, Bid: 463, Hand Type: 3, Rank: 497
+ Winnings: 230111
+Hand: 68226, Bid: 291, Hand Type: 3, Rank: 498
+ Winnings: 144918
+Hand: 68862, Bid: 270, Hand Type: 3, Rank: 499
+ Winnings: 134730
+Hand: 69K6K, Bid: 85, Hand Type: 3, Rank: 500
+ Winnings: 42500
+Hand: 6TT6A, Bid: 464, Hand Type: 3, Rank: 501
+ Winnings: 232464
+Hand: 72724, Bid: 550, Hand Type: 3, Rank: 502
+ Winnings: 276100
+Hand: 7272K, Bid: 329, Hand Type: 3, Rank: 503
+ Winnings: 165487
+Hand: 73344, Bid: 207, Hand Type: 3, Rank: 504
+ Winnings: 104328
+Hand: 73K3K, Bid: 22, Hand Type: 3, Rank: 505
+ Winnings: 11110
+Hand: 74488, Bid: 166, Hand Type: 3, Rank: 506
+ Winnings: 83996
+Hand: 74TT4, Bid: 445, Hand Type: 3, Rank: 507
+ Winnings: 225615
+Hand: 74J4J, Bid: 274, Hand Type: 3, Rank: 508
+ Winnings: 139192
+Hand: 7667A, Bid: 512, Hand Type: 3, Rank: 509
+ Winnings: 260608
+Hand: 76868, Bid: 156, Hand Type: 3, Rank: 510
+ Winnings: 79560
+Hand: 77545, Bid: 231, Hand Type: 3, Rank: 511
+ Winnings: 118041
+Hand: 7799J, Bid: 482, Hand Type: 3, Rank: 512
+ Winnings: 246784
+Hand: 77J55, Bid: 779, Hand Type: 3, Rank: 513
+ Winnings: 399627
+Hand: 78338, Bid: 84, Hand Type: 3, Rank: 514
+ Winnings: 43176
+Hand: 78847, Bid: 404, Hand Type: 3, Rank: 515
+ Winnings: 208060
+Hand: 7J766, Bid: 652, Hand Type: 3, Rank: 516
+ Winnings: 336432
+Hand: 7J878, Bid: 586, Hand Type: 3, Rank: 517
+ Winnings: 302962
+Hand: 7Q7QT, Bid: 656, Hand Type: 3, Rank: 518
+ Winnings: 339808
+Hand: 7KK7J, Bid: 795, Hand Type: 3, Rank: 519
+ Winnings: 412605
+Hand: 833QQ, Bid: 420, Hand Type: 3, Rank: 520
+ Winnings: 218400
+Hand: 83668, Bid: 961, Hand Type: 3, Rank: 521
+ Winnings: 500681
+Hand: 84948, Bid: 192, Hand Type: 3, Rank: 522
+ Winnings: 100224
+Hand: 85385, Bid: 702, Hand Type: 3, Rank: 523
+ Winnings: 367146
+Hand: 8558J, Bid: 879, Hand Type: 3, Rank: 524
+ Winnings: 460596
+Hand: 86T68, Bid: 203, Hand Type: 3, Rank: 525
+ Winnings: 106575
+Hand: 8787K, Bid: 262, Hand Type: 3, Rank: 526
+ Winnings: 137812
+Hand: 8822J, Bid: 742, Hand Type: 3, Rank: 527
+ Winnings: 391034
+Hand: 883J3, Bid: 538, Hand Type: 3, Rank: 528
+ Winnings: 284064
+Hand: 88445, Bid: 947, Hand Type: 3, Rank: 529
+ Winnings: 500963
+Hand: 88JJ7, Bid: 588, Hand Type: 3, Rank: 530
+ Winnings: 311640
+Hand: 88A9A, Bid: 880, Hand Type: 3, Rank: 531
+ Winnings: 467280
+Hand: 88AAK, Bid: 575, Hand Type: 3, Rank: 532
+ Winnings: 305900
+Hand: 899K8, Bid: 918, Hand Type: 3, Rank: 533
+ Winnings: 489294
+Hand: 8T9T8, Bid: 481, Hand Type: 3, Rank: 534
+ Winnings: 256854
+Hand: 8TT66, Bid: 569, Hand Type: 3, Rank: 535
+ Winnings: 304415
+Hand: 8J448, Bid: 977, Hand Type: 3, Rank: 536
+ Winnings: 523672
+Hand: 8JAJA, Bid: 663, Hand Type: 3, Rank: 537
+ Winnings: 356031
+Hand: 8Q558, Bid: 783, Hand Type: 3, Rank: 538
+ Winnings: 421254
+Hand: 9229K, Bid: 593, Hand Type: 3, Rank: 539
+ Winnings: 319627
+Hand: 9292J, Bid: 38, Hand Type: 3, Rank: 540
+ Winnings: 20520
+Hand: 95353, Bid: 16, Hand Type: 3, Rank: 541
+ Winnings: 8656
+Hand: 95945, Bid: 957, Hand Type: 3, Rank: 542
+ Winnings: 518694
+Hand: 966Q9, Bid: 710, Hand Type: 3, Rank: 543
+ Winnings: 385530
+Hand: 96869, Bid: 102, Hand Type: 3, Rank: 544
+ Winnings: 55488
+Hand: 97697, Bid: 211, Hand Type: 3, Rank: 545
+ Winnings: 114995
+Hand: 98982, Bid: 747, Hand Type: 3, Rank: 546
+ Winnings: 407862
+Hand: 99833, Bid: 215, Hand Type: 3, Rank: 547
+ Winnings: 117605
+Hand: 998J8, Bid: 374, Hand Type: 3, Rank: 548
+ Winnings: 204952
+Hand: 99TTJ, Bid: 597, Hand Type: 3, Rank: 549
+ Winnings: 327753
+Hand: 9TTK9, Bid: 58, Hand Type: 3, Rank: 550
+ Winnings: 31900
+Hand: 9JQ9J, Bid: 731, Hand Type: 3, Rank: 551
+ Winnings: 402781
+Hand: 9Q898, Bid: 484, Hand Type: 3, Rank: 552
+ Winnings: 267168
+Hand: 9K9KJ, Bid: 449, Hand Type: 3, Rank: 553
+ Winnings: 248297
+Hand: 9A95A, Bid: 87, Hand Type: 3, Rank: 554
+ Winnings: 48198
+Hand: T3399, Bid: 570, Hand Type: 3, Rank: 555
+ Winnings: 316350
+Hand: T559T, Bid: 695, Hand Type: 3, Rank: 556
+ Winnings: 386420
+Hand: T929T, Bid: 902, Hand Type: 3, Rank: 557
+ Winnings: 502414
+Hand: T99TQ, Bid: 456, Hand Type: 3, Rank: 558
+ Winnings: 254448
+Hand: TT2J2, Bid: 844, Hand Type: 3, Rank: 559
+ Winnings: 471796
+Hand: TTJAJ, Bid: 317, Hand Type: 3, Rank: 560
+ Winnings: 177520
+Hand: TJ44J, Bid: 448, Hand Type: 3, Rank: 561
+ Winnings: 251328
+Hand: TJTJQ, Bid: 738, Hand Type: 3, Rank: 562
+ Winnings: 414756
+Hand: TKTQQ, Bid: 476, Hand Type: 3, Rank: 563
+ Winnings: 267988
+Hand: J2424, Bid: 302, Hand Type: 3, Rank: 564
+ Winnings: 170328
+Hand: J2QQJ, Bid: 630, Hand Type: 3, Rank: 565
+ Winnings: 355950
+Hand: J4Q4J, Bid: 863, Hand Type: 3, Rank: 566
+ Winnings: 488458
+Hand: J5J35, Bid: 439, Hand Type: 3, Rank: 567
+ Winnings: 248913
+Hand: J6996, Bid: 254, Hand Type: 3, Rank: 568
+ Winnings: 144272
+Hand: J77TT, Bid: 813, Hand Type: 3, Rank: 569
+ Winnings: 462597
+Hand: J7J7T, Bid: 407, Hand Type: 3, Rank: 570
+ Winnings: 231990
+Hand: J8T8J, Bid: 118, Hand Type: 3, Rank: 571
+ Winnings: 67378
+Hand: J9J97, Bid: 23, Hand Type: 3, Rank: 572
+ Winnings: 13156
+Hand: JTJ55, Bid: 54, Hand Type: 3, Rank: 573
+ Winnings: 30942
+Hand: JJ448, Bid: 514, Hand Type: 3, Rank: 574
+ Winnings: 295036
+Hand: JJTTK, Bid: 998, Hand Type: 3, Rank: 575
+ Winnings: 573850
+Hand: JQ77Q, Bid: 692, Hand Type: 3, Rank: 576
+ Winnings: 398592
+Hand: JQQ22, Bid: 441, Hand Type: 3, Rank: 577
+ Winnings: 254457
+Hand: JK8JK, Bid: 92, Hand Type: 3, Rank: 578
+ Winnings: 53176
+Hand: Q3Q43, Bid: 568, Hand Type: 3, Rank: 579
+ Winnings: 328872
+Hand: Q565Q, Bid: 995, Hand Type: 3, Rank: 580
+ Winnings: 577100
+Hand: Q58Q5, Bid: 183, Hand Type: 3, Rank: 581
+ Winnings: 106323
+Hand: Q665Q, Bid: 114, Hand Type: 3, Rank: 582
+ Winnings: 66348
+Hand: Q6JQ6, Bid: 81, Hand Type: 3, Rank: 583
+ Winnings: 47223
+Hand: Q858Q, Bid: 442, Hand Type: 3, Rank: 584
+ Winnings: 258128
+Hand: Q93Q9, Bid: 793, Hand Type: 3, Rank: 585
+ Winnings: 463905
+Hand: Q944Q, Bid: 872, Hand Type: 3, Rank: 586
+ Winnings: 510992
+Hand: QJQ55, Bid: 884, Hand Type: 3, Rank: 587
+ Winnings: 518908
+Hand: QQ522, Bid: 7, Hand Type: 3, Rank: 588
+ Winnings: 4116
+Hand: QQ992, Bid: 849, Hand Type: 3, Rank: 589
+ Winnings: 500061
+Hand: QQ9J9, Bid: 736, Hand Type: 3, Rank: 590
+ Winnings: 434240
+Hand: QQA22, Bid: 400, Hand Type: 3, Rank: 591
+ Winnings: 236400
+Hand: QA7AQ, Bid: 287, Hand Type: 3, Rank: 592
+ Winnings: 169904
+Hand: K33JK, Bid: 784, Hand Type: 3, Rank: 593
+ Winnings: 464912
+Hand: K44JK, Bid: 582, Hand Type: 3, Rank: 594
+ Winnings: 345708
+Hand: K6K55, Bid: 161, Hand Type: 3, Rank: 595
+ Winnings: 95795
+Hand: K88KJ, Bid: 346, Hand Type: 3, Rank: 596
+ Winnings: 206216
+Hand: KK233, Bid: 962, Hand Type: 3, Rank: 597
+ Winnings: 574314
+Hand: KK288, Bid: 540, Hand Type: 3, Rank: 598
+ Winnings: 322920
+Hand: KK399, Bid: 948, Hand Type: 3, Rank: 599
+ Winnings: 567852
+Hand: KK55T, Bid: 536, Hand Type: 3, Rank: 600
+ Winnings: 321600
+Hand: KK663, Bid: 300, Hand Type: 3, Rank: 601
+ Winnings: 180300
+Hand: KK66T, Bid: 672, Hand Type: 3, Rank: 602
+ Winnings: 404544
+Hand: KK7A7, Bid: 73, Hand Type: 3, Rank: 603
+ Winnings: 44019
+Hand: KK883, Bid: 417, Hand Type: 3, Rank: 604
+ Winnings: 251868
+Hand: KKQQ3, Bid: 213, Hand Type: 3, Rank: 605
+ Winnings: 128865
+Hand: A22TT, Bid: 996, Hand Type: 3, Rank: 606
+ Winnings: 603576
+Hand: A3663, Bid: 24, Hand Type: 3, Rank: 607
+ Winnings: 14568
+Hand: A3QAQ, Bid: 72, Hand Type: 3, Rank: 608
+ Winnings: 43776
+Hand: A5J5A, Bid: 472, Hand Type: 3, Rank: 609
+ Winnings: 287448
+Hand: A84A4, Bid: 222, Hand Type: 3, Rank: 610
+ Winnings: 135420
+Hand: A9898, Bid: 703, Hand Type: 3, Rank: 611
+ Winnings: 429533
+Hand: AJA5J, Bid: 789, Hand Type: 3, Rank: 612
+ Winnings: 482868
+Hand: AA442, Bid: 572, Hand Type: 3, Rank: 613
+ Winnings: 350636
+Hand: AA5TT, Bid: 937, Hand Type: 3, Rank: 614
+ Winnings: 575318
+Hand: AA77J, Bid: 1000, Hand Type: 3, Rank: 615
+ Winnings: 615000
+Hand: AA797, Bid: 268, Hand Type: 3, Rank: 616
+ Winnings: 165088
+Hand: AA99J, Bid: 758, Hand Type: 3, Rank: 617
+ Winnings: 467686
+Hand: 22253, Bid: 68, Hand Type: 4, Rank: 618
+ Winnings: 42024
+Hand: 223J2, Bid: 432, Hand Type: 4, Rank: 619
+ Winnings: 267408
+Hand: 22572, Bid: 335, Hand Type: 4, Rank: 620
+ Winnings: 207700
+Hand: 22J62, Bid: 61, Hand Type: 4, Rank: 621
+ Winnings: 37881
+Hand: 22K2J, Bid: 45, Hand Type: 4, Rank: 622
+ Winnings: 27990
+Hand: 24555, Bid: 245, Hand Type: 4, Rank: 623
+ Winnings: 152635
+Hand: 24K44, Bid: 739, Hand Type: 4, Rank: 624
+ Winnings: 461136
+Hand: 277T7, Bid: 764, Hand Type: 4, Rank: 625
+ Winnings: 477500
+Hand: 29228, Bid: 551, Hand Type: 4, Rank: 626
+ Winnings: 344926
+Hand: 292T2, Bid: 774, Hand Type: 4, Rank: 627
+ Winnings: 485298
+Hand: 29J22, Bid: 44, Hand Type: 4, Rank: 628
+ Winnings: 27632
+Hand: 2J227, Bid: 905, Hand Type: 4, Rank: 629
+ Winnings: 569245
+Hand: 2J822, Bid: 530, Hand Type: 4, Rank: 630
+ Winnings: 333900
+Hand: 2Q5QQ, Bid: 881, Hand Type: 4, Rank: 631
+ Winnings: 555911
+Hand: 2QQQ3, Bid: 75, Hand Type: 4, Rank: 632
+ Winnings: 47400
+Hand: 2K242, Bid: 320, Hand Type: 4, Rank: 633
+ Winnings: 202560
+Hand: 2A333, Bid: 626, Hand Type: 4, Rank: 634
+ Winnings: 396884
+Hand: 33352, Bid: 591, Hand Type: 4, Rank: 635
+ Winnings: 375285
+Hand: 3353T, Bid: 297, Hand Type: 4, Rank: 636
+ Winnings: 188892
+Hand: 3373J, Bid: 141, Hand Type: 4, Rank: 637
+ Winnings: 89817
+Hand: 33Q23, Bid: 283, Hand Type: 4, Rank: 638
+ Winnings: 180554
+Hand: 33K63, Bid: 623, Hand Type: 4, Rank: 639
+ Winnings: 398097
+Hand: 34323, Bid: 735, Hand Type: 4, Rank: 640
+ Winnings: 470400
+Hand: 34442, Bid: 41, Hand Type: 4, Rank: 641
+ Winnings: 26281
+Hand: 344J4, Bid: 518, Hand Type: 4, Rank: 642
+ Winnings: 332556
+Hand: 35K33, Bid: 366, Hand Type: 4, Rank: 643
+ Winnings: 235338
+Hand: 37555, Bid: 609, Hand Type: 4, Rank: 644
+ Winnings: 392196
+Hand: 38343, Bid: 860, Hand Type: 4, Rank: 645
+ Winnings: 554700
+Hand: 3Q9QQ, Bid: 495, Hand Type: 4, Rank: 646
+ Winnings: 319770
+Hand: 3QTTT, Bid: 455, Hand Type: 4, Rank: 647
+ Winnings: 294385
+Hand: 3K555, Bid: 330, Hand Type: 4, Rank: 648
+ Winnings: 213840
+Hand: 4333A, Bid: 959, Hand Type: 4, Rank: 649
+ Winnings: 622391
+Hand: 44349, Bid: 474, Hand Type: 4, Rank: 650
+ Winnings: 308100
+Hand: 44384, Bid: 560, Hand Type: 4, Rank: 651
+ Winnings: 364560
+Hand: 44429, Bid: 326, Hand Type: 4, Rank: 652
+ Winnings: 212552
+Hand: 4449J, Bid: 100, Hand Type: 4, Rank: 653
+ Winnings: 65300
+Hand: 449Q4, Bid: 454, Hand Type: 4, Rank: 654
+ Winnings: 296916
+Hand: 45464, Bid: 31, Hand Type: 4, Rank: 655
+ Winnings: 20305
+Hand: 46667, Bid: 906, Hand Type: 4, Rank: 656
+ Winnings: 594336
+Hand: 4666Q, Bid: 163, Hand Type: 4, Rank: 657
+ Winnings: 107091
+Hand: 47424, Bid: 394, Hand Type: 4, Rank: 658
+ Winnings: 259252
+Hand: 48464, Bid: 792, Hand Type: 4, Rank: 659
+ Winnings: 521928
+Hand: 48A44, Bid: 627, Hand Type: 4, Rank: 660
+ Winnings: 413820
+Hand: 4T474, Bid: 285, Hand Type: 4, Rank: 661
+ Winnings: 188385
+Hand: 4J4Q4, Bid: 470, Hand Type: 4, Rank: 662
+ Winnings: 311140
+Hand: 4Q44K, Bid: 625, Hand Type: 4, Rank: 663
+ Winnings: 414375
+Hand: 52292, Bid: 250, Hand Type: 4, Rank: 664
+ Winnings: 166000
+Hand: 52J22, Bid: 835, Hand Type: 4, Rank: 665
+ Winnings: 555275
+Hand: 53633, Bid: 405, Hand Type: 4, Rank: 666
+ Winnings: 269730
+Hand: 53AAA, Bid: 12, Hand Type: 4, Rank: 667
+ Winnings: 8004
+Hand: 54844, Bid: 334, Hand Type: 4, Rank: 668
+ Winnings: 223112
+Hand: 5556Q, Bid: 517, Hand Type: 4, Rank: 669
+ Winnings: 345873
+Hand: 555Q8, Bid: 776, Hand Type: 4, Rank: 670
+ Winnings: 519920
+Hand: 55856, Bid: 610, Hand Type: 4, Rank: 671
+ Winnings: 409310
+Hand: 55Q54, Bid: 965, Hand Type: 4, Rank: 672
+ Winnings: 648480
+Hand: 55KJ5, Bid: 130, Hand Type: 4, Rank: 673
+ Winnings: 87490
+Hand: 5655A, Bid: 351, Hand Type: 4, Rank: 674
+ Winnings: 236574
+Hand: 5777J, Bid: 178, Hand Type: 4, Rank: 675
+ Winnings: 120150
+Hand: 58955, Bid: 547, Hand Type: 4, Rank: 676
+ Winnings: 369772
+Hand: 59455, Bid: 889, Hand Type: 4, Rank: 677
+ Winnings: 601853
+Hand: 59996, Bid: 933, Hand Type: 4, Rank: 678
+ Winnings: 632574
+Hand: 5J558, Bid: 430, Hand Type: 4, Rank: 679
+ Winnings: 291970
+Hand: 5K455, Bid: 362, Hand Type: 4, Rank: 680
+ Winnings: 246160
+Hand: 63888, Bid: 782, Hand Type: 4, Rank: 681
+ Winnings: 532542
+Hand: 656A6, Bid: 313, Hand Type: 4, Rank: 682
+ Winnings: 213466
+Hand: 6668J, Bid: 621, Hand Type: 4, Rank: 683
+ Winnings: 424143
+Hand: 666Q2, Bid: 535, Hand Type: 4, Rank: 684
+ Winnings: 365940
+Hand: 67222, Bid: 314, Hand Type: 4, Rank: 685
+ Winnings: 215090
+Hand: 67877, Bid: 77, Hand Type: 4, Rank: 686
+ Winnings: 52822
+Hand: 69766, Bid: 440, Hand Type: 4, Rank: 687
+ Winnings: 302280
+Hand: 6T6K6, Bid: 196, Hand Type: 4, Rank: 688
+ Winnings: 134848
+Hand: 6J626, Bid: 666, Hand Type: 4, Rank: 689
+ Winnings: 458874
+Hand: 6Q2QQ, Bid: 983, Hand Type: 4, Rank: 690
+ Winnings: 678270
+Hand: 6QQQ5, Bid: 214, Hand Type: 4, Rank: 691
+ Winnings: 147874
+Hand: 6K6J6, Bid: 767, Hand Type: 4, Rank: 692
+ Winnings: 530764
+Hand: 72333, Bid: 807, Hand Type: 4, Rank: 693
+ Winnings: 559251
+Hand: 755J5, Bid: 510, Hand Type: 4, Rank: 694
+ Winnings: 353940
+Hand: 7747Q, Bid: 1, Hand Type: 4, Rank: 695
+ Winnings: 695
+Hand: 79772, Bid: 96, Hand Type: 4, Rank: 696
+ Winnings: 66816
+Hand: 79QQQ, Bid: 883, Hand Type: 4, Rank: 697
+ Winnings: 615451
+Hand: 7T77A, Bid: 882, Hand Type: 4, Rank: 698
+ Winnings: 615636
+Hand: 7J7T7, Bid: 809, Hand Type: 4, Rank: 699
+ Winnings: 565491
+Hand: 7A77Q, Bid: 105, Hand Type: 4, Rank: 700
+ Winnings: 73500
+Hand: 858J8, Bid: 781, Hand Type: 4, Rank: 701
+ Winnings: 547481
+Hand: 86488, Bid: 815, Hand Type: 4, Rank: 702
+ Winnings: 572130
+Hand: 8777K, Bid: 708, Hand Type: 4, Rank: 703
+ Winnings: 497724
+Hand: 88285, Bid: 534, Hand Type: 4, Rank: 704
+ Winnings: 375936
+Hand: 88498, Bid: 340, Hand Type: 4, Rank: 705
+ Winnings: 239700
+Hand: 88K78, Bid: 645, Hand Type: 4, Rank: 706
+ Winnings: 455370
+Hand: 8T7TT, Bid: 748, Hand Type: 4, Rank: 707
+ Winnings: 528836
+Hand: 8T88K, Bid: 868, Hand Type: 4, Rank: 708
+ Winnings: 614544
+Hand: 8A868, Bid: 616, Hand Type: 4, Rank: 709
+ Winnings: 436744
+Hand: 92242, Bid: 579, Hand Type: 4, Rank: 710
+ Winnings: 411090
+Hand: 92272, Bid: 318, Hand Type: 4, Rank: 711
+ Winnings: 226098
+Hand: 9399J, Bid: 858, Hand Type: 4, Rank: 712
+ Winnings: 610896
+Hand: 94333, Bid: 660, Hand Type: 4, Rank: 713
+ Winnings: 470580
+Hand: 95994, Bid: 757, Hand Type: 4, Rank: 714
+ Winnings: 540498
+Hand: 969K9, Bid: 981, Hand Type: 4, Rank: 715
+ Winnings: 701415
+Hand: 97994, Bid: 644, Hand Type: 4, Rank: 716
+ Winnings: 461104
+Hand: 979J9, Bid: 827, Hand Type: 4, Rank: 717
+ Winnings: 592959
+Hand: 993T9, Bid: 643, Hand Type: 4, Rank: 718
+ Winnings: 461674
+Hand: 9998J, Bid: 246, Hand Type: 4, Rank: 719
+ Winnings: 176874
+Hand: 99J29, Bid: 595, Hand Type: 4, Rank: 720
+ Winnings: 428400
+Hand: 99J59, Bid: 901, Hand Type: 4, Rank: 721
+ Winnings: 649621
+Hand: 99J94, Bid: 843, Hand Type: 4, Rank: 722
+ Winnings: 608646
+Hand: 9TTTK, Bid: 49, Hand Type: 4, Rank: 723
+ Winnings: 35427
+Hand: 9JT99, Bid: 954, Hand Type: 4, Rank: 724
+ Winnings: 690696
+Hand: 9KQKK, Bid: 975, Hand Type: 4, Rank: 725
+ Winnings: 706875
+Hand: 9KKKT, Bid: 759, Hand Type: 4, Rank: 726
+ Winnings: 551034
+Hand: 9A555, Bid: 348, Hand Type: 4, Rank: 727
+ Winnings: 252996
+Hand: T3339, Bid: 86, Hand Type: 4, Rank: 728
+ Winnings: 62608
+Hand: T5TTK, Bid: 682, Hand Type: 4, Rank: 729
+ Winnings: 497178
+Hand: T7QTT, Bid: 383, Hand Type: 4, Rank: 730
+ Winnings: 279590
+Hand: T9996, Bid: 238, Hand Type: 4, Rank: 731
+ Winnings: 173978
+Hand: T9T3T, Bid: 991, Hand Type: 4, Rank: 732
+ Winnings: 725412
+Hand: TT2TQ, Bid: 399, Hand Type: 4, Rank: 733
+ Winnings: 292467
+Hand: TT98T, Bid: 342, Hand Type: 4, Rank: 734
+ Winnings: 251028
+Hand: TTT28, Bid: 519, Hand Type: 4, Rank: 735
+ Winnings: 381465
+Hand: TTTQ6, Bid: 142, Hand Type: 4, Rank: 736
+ Winnings: 104512
+Hand: TK3KK, Bid: 794, Hand Type: 4, Rank: 737
+ Winnings: 585178
+Hand: TKQQQ, Bid: 810, Hand Type: 4, Rank: 738
+ Winnings: 597780
+Hand: TKK8K, Bid: 288, Hand Type: 4, Rank: 739
+ Winnings: 212832
+Hand: TAAA7, Bid: 715, Hand Type: 4, Rank: 740
+ Winnings: 529100
+Hand: J2224, Bid: 926, Hand Type: 4, Rank: 741
+ Winnings: 686166
+Hand: J2AAA, Bid: 750, Hand Type: 4, Rank: 742
+ Winnings: 556500
+Hand: J444T, Bid: 614, Hand Type: 4, Rank: 743
+ Winnings: 456202
+Hand: J5565, Bid: 611, Hand Type: 4, Rank: 744
+ Winnings: 454584
+Hand: J5Q55, Bid: 229, Hand Type: 4, Rank: 745
+ Winnings: 170605
+Hand: JTTTK, Bid: 328, Hand Type: 4, Rank: 746
+ Winnings: 244688
+Hand: JJ2J9, Bid: 997, Hand Type: 4, Rank: 747
+ Winnings: 744759
+Hand: JJQJ4, Bid: 707, Hand Type: 4, Rank: 748
+ Winnings: 528836
+Hand: JKQQQ, Bid: 516, Hand Type: 4, Rank: 749
+ Winnings: 386484
+Hand: JAA5A, Bid: 966, Hand Type: 4, Rank: 750
+ Winnings: 724500
+Hand: JAAAK, Bid: 691, Hand Type: 4, Rank: 751
+ Winnings: 518941
+Hand: Q2272, Bid: 515, Hand Type: 4, Rank: 752
+ Winnings: 387280
+Hand: Q3Q4Q, Bid: 994, Hand Type: 4, Rank: 753
+ Winnings: 748482
+Hand: Q6656, Bid: 525, Hand Type: 4, Rank: 754
+ Winnings: 395850
+Hand: QJ777, Bid: 136, Hand Type: 4, Rank: 755
+ Winnings: 102680
+Hand: QJ9QQ, Bid: 949, Hand Type: 4, Rank: 756
+ Winnings: 717444
+Hand: QQJQ6, Bid: 37, Hand Type: 4, Rank: 757
+ Winnings: 28009
+Hand: QQQ35, Bid: 316, Hand Type: 4, Rank: 758
+ Winnings: 239528
+Hand: QQQT3, Bid: 88, Hand Type: 4, Rank: 759
+ Winnings: 66792
+Hand: QKQ5Q, Bid: 802, Hand Type: 4, Rank: 760
+ Winnings: 609520
+Hand: K56KK, Bid: 587, Hand Type: 4, Rank: 761
+ Winnings: 446707
+Hand: K6663, Bid: 110, Hand Type: 4, Rank: 762
+ Winnings: 83820
+Hand: K6866, Bid: 982, Hand Type: 4, Rank: 763
+ Winnings: 749266
+Hand: K6JJJ, Bid: 216, Hand Type: 4, Rank: 764
+ Winnings: 165024
+Hand: K7779, Bid: 554, Hand Type: 4, Rank: 765
+ Winnings: 423810
+Hand: KTJJJ, Bid: 294, Hand Type: 4, Rank: 766
+ Winnings: 225204
+Hand: KJKK9, Bid: 189, Hand Type: 4, Rank: 767
+ Winnings: 144963
+Hand: KK35K, Bid: 673, Hand Type: 4, Rank: 768
+ Winnings: 516864
+Hand: KK7JK, Bid: 433, Hand Type: 4, Rank: 769
+ Winnings: 332977
+Hand: KK7K5, Bid: 176, Hand Type: 4, Rank: 770
+ Winnings: 135520
+Hand: KKJ2K, Bid: 410, Hand Type: 4, Rank: 771
+ Winnings: 316110
+Hand: KKJAK, Bid: 833, Hand Type: 4, Rank: 772
+ Winnings: 643076
+Hand: KKK5J, Bid: 734, Hand Type: 4, Rank: 773
+ Winnings: 567382
+Hand: KKK6J, Bid: 719, Hand Type: 4, Rank: 774
+ Winnings: 556506
+Hand: KA5AA, Bid: 26, Hand Type: 4, Rank: 775
+ Winnings: 20150
+Hand: A3KAA, Bid: 106, Hand Type: 4, Rank: 776
+ Winnings: 82256
+Hand: A3AAT, Bid: 352, Hand Type: 4, Rank: 777
+ Winnings: 273504
+Hand: A444Q, Bid: 325, Hand Type: 4, Rank: 778
+ Winnings: 252850
+Hand: A6866, Bid: 837, Hand Type: 4, Rank: 779
+ Winnings: 652023
+Hand: AJ6AA, Bid: 893, Hand Type: 4, Rank: 780
+ Winnings: 696540
+Hand: AJ7AA, Bid: 121, Hand Type: 4, Rank: 781
+ Winnings: 94501
+Hand: AQQQT, Bid: 709, Hand Type: 4, Rank: 782
+ Winnings: 554438
+Hand: AKATA, Bid: 188, Hand Type: 4, Rank: 783
+ Winnings: 147204
+Hand: AA4TA, Bid: 3, Hand Type: 4, Rank: 784
+ Winnings: 2352
+Hand: AAKA9, Bid: 577, Hand Type: 4, Rank: 785
+ Winnings: 452945
+Hand: AAA8T, Bid: 799, Hand Type: 4, Rank: 786
+ Winnings: 628014
+Hand: 22277, Bid: 635, Hand Type: 5, Rank: 787
+ Winnings: 499745
+Hand: 222TT, Bid: 123, Hand Type: 5, Rank: 788
+ Winnings: 96924
+Hand: 222KK, Bid: 339, Hand Type: 5, Rank: 789
+ Winnings: 267471
+Hand: 22626, Bid: 128, Hand Type: 5, Rank: 790
+ Winnings: 101120
+Hand: 26662, Bid: 686, Hand Type: 5, Rank: 791
+ Winnings: 542626
+Hand: 28228, Bid: 985, Hand Type: 5, Rank: 792
+ Winnings: 780120
+Hand: 29229, Bid: 309, Hand Type: 5, Rank: 793
+ Winnings: 245037
+Hand: 2QQ2Q, Bid: 450, Hand Type: 5, Rank: 794
+ Winnings: 357300
+Hand: 33388, Bid: 148, Hand Type: 5, Rank: 795
+ Winnings: 117660
+Hand: 33663, Bid: 571, Hand Type: 5, Rank: 796
+ Winnings: 454516
+Hand: 33J3J, Bid: 343, Hand Type: 5, Rank: 797
+ Winnings: 273371
+Hand: 33K3K, Bid: 852, Hand Type: 5, Rank: 798
+ Winnings: 679896
+Hand: 34433, Bid: 801, Hand Type: 5, Rank: 799
+ Winnings: 639999
+Hand: 34434, Bid: 640, Hand Type: 5, Rank: 800
+ Winnings: 512000
+Hand: 38838, Bid: 772, Hand Type: 5, Rank: 801
+ Winnings: 618372
+Hand: 39339, Bid: 282, Hand Type: 5, Rank: 802
+ Winnings: 226164
+Hand: 3A33A, Bid: 494, Hand Type: 5, Rank: 803
+ Winnings: 396682
+Hand: 44222, Bid: 600, Hand Type: 5, Rank: 804
+ Winnings: 482400
+Hand: 44466, Bid: 940, Hand Type: 5, Rank: 805
+ Winnings: 756700
+Hand: 46664, Bid: 350, Hand Type: 5, Rank: 806
+ Winnings: 282100
+Hand: 47747, Bid: 466, Hand Type: 5, Rank: 807
+ Winnings: 376062
+Hand: 48884, Bid: 426, Hand Type: 5, Rank: 808
+ Winnings: 344208
+Hand: 4TT4T, Bid: 160, Hand Type: 5, Rank: 809
+ Winnings: 129440
+Hand: 4JJ44, Bid: 344, Hand Type: 5, Rank: 810
+ Winnings: 278640
+Hand: 4AA4A, Bid: 877, Hand Type: 5, Rank: 811
+ Winnings: 711247
+Hand: 53355, Bid: 639, Hand Type: 5, Rank: 812
+ Winnings: 518868
+Hand: 55333, Bid: 267, Hand Type: 5, Rank: 813
+ Winnings: 217071
+Hand: 55444, Bid: 746, Hand Type: 5, Rank: 814
+ Winnings: 607244
+Hand: 555TT, Bid: 64, Hand Type: 5, Rank: 815
+ Winnings: 52160
+Hand: 555AA, Bid: 111, Hand Type: 5, Rank: 816
+ Winnings: 90576
+Hand: 55888, Bid: 749, Hand Type: 5, Rank: 817
+ Winnings: 611933
+Hand: 55JJJ, Bid: 225, Hand Type: 5, Rank: 818
+ Winnings: 184050
+Hand: 55KK5, Bid: 829, Hand Type: 5, Rank: 819
+ Winnings: 678951
+Hand: 56656, Bid: 483, Hand Type: 5, Rank: 820
+ Winnings: 396060
+Hand: 58855, Bid: 501, Hand Type: 5, Rank: 821
+ Winnings: 411321
+Hand: 59955, Bid: 862, Hand Type: 5, Rank: 822
+ Winnings: 708564
+Hand: 59995, Bid: 101, Hand Type: 5, Rank: 823
+ Winnings: 83123
+Hand: 5J5J5, Bid: 172, Hand Type: 5, Rank: 824
+ Winnings: 141728
+Hand: 5QQQ5, Bid: 478, Hand Type: 5, Rank: 825
+ Winnings: 394350
+Hand: 66363, Bid: 70, Hand Type: 5, Rank: 826
+ Winnings: 57820
+Hand: 66TTT, Bid: 984, Hand Type: 5, Rank: 827
+ Winnings: 813768
+Hand: 66Q6Q, Bid: 543, Hand Type: 5, Rank: 828
+ Winnings: 449604
+Hand: 67677, Bid: 527, Hand Type: 5, Rank: 829
+ Winnings: 436883
+Hand: 68668, Bid: 819, Hand Type: 5, Rank: 830
+ Winnings: 679770
+Hand: 6T6T6, Bid: 590, Hand Type: 5, Rank: 831
+ Winnings: 490290
+Hand: 6K66K, Bid: 850, Hand Type: 5, Rank: 832
+ Winnings: 707200
+Hand: 6AA6A, Bid: 212, Hand Type: 5, Rank: 833
+ Winnings: 176596
+Hand: 75575, Bid: 419, Hand Type: 5, Rank: 834
+ Winnings: 349446
+Hand: 75757, Bid: 544, Hand Type: 5, Rank: 835
+ Winnings: 454240
+Hand: 77666, Bid: 279, Hand Type: 5, Rank: 836
+ Winnings: 233244
+Hand: 777TT, Bid: 938, Hand Type: 5, Rank: 837
+ Winnings: 785106
+Hand: 77J7J, Bid: 259, Hand Type: 5, Rank: 838
+ Winnings: 217042
+Hand: 77QQ7, Bid: 379, Hand Type: 5, Rank: 839
+ Winnings: 317981
+Hand: 78877, Bid: 428, Hand Type: 5, Rank: 840
+ Winnings: 359520
+Hand: 7QQ7Q, Bid: 321, Hand Type: 5, Rank: 841
+ Winnings: 269961
+Hand: 7K7K7, Bid: 322, Hand Type: 5, Rank: 842
+ Winnings: 271124
+Hand: 7A77A, Bid: 576, Hand Type: 5, Rank: 843
+ Winnings: 485568
+Hand: 87878, Bid: 654, Hand Type: 5, Rank: 844
+ Winnings: 551976
+Hand: 88668, Bid: 251, Hand Type: 5, Rank: 845
+ Winnings: 212095
+Hand: 88989, Bid: 290, Hand Type: 5, Rank: 846
+ Winnings: 245340
+Hand: 88T8T, Bid: 755, Hand Type: 5, Rank: 847
+ Winnings: 639485
+Hand: 8T8TT, Bid: 134, Hand Type: 5, Rank: 848
+ Winnings: 113632
+Hand: 8JJ88, Bid: 874, Hand Type: 5, Rank: 849
+ Winnings: 742026
+Hand: 8QQ8Q, Bid: 914, Hand Type: 5, Rank: 850
+ Winnings: 776900
+Hand: 8AA88, Bid: 150, Hand Type: 5, Rank: 851
+ Winnings: 127650
+Hand: 94994, Bid: 272, Hand Type: 5, Rank: 852
+ Winnings: 231744
+Hand: 96669, Bid: 684, Hand Type: 5, Rank: 853
+ Winnings: 583452
+Hand: 97779, Bid: 169, Hand Type: 5, Rank: 854
+ Winnings: 144326
+Hand: 97997, Bid: 275, Hand Type: 5, Rank: 855
+ Winnings: 235125
+Hand: 99393, Bid: 730, Hand Type: 5, Rank: 856
+ Winnings: 624880
+Hand: 99669, Bid: 674, Hand Type: 5, Rank: 857
+ Winnings: 577618
+Hand: 999TT, Bid: 230, Hand Type: 5, Rank: 858
+ Winnings: 197340
+Hand: 99JJ9, Bid: 564, Hand Type: 5, Rank: 859
+ Winnings: 484476
+Hand: 99KKK, Bid: 83, Hand Type: 5, Rank: 860
+ Winnings: 71380
+Hand: 99AAA, Bid: 210, Hand Type: 5, Rank: 861
+ Winnings: 180810
+Hand: T2TT2, Bid: 34, Hand Type: 5, Rank: 862
+ Winnings: 29308
+Hand: T3T33, Bid: 615, Hand Type: 5, Rank: 863
+ Winnings: 530745
+Hand: T3TT3, Bid: 667, Hand Type: 5, Rank: 864
+ Winnings: 576288
+Hand: TATAT, Bid: 233, Hand Type: 5, Rank: 865
+ Winnings: 201545
+Hand: J2J22, Bid: 331, Hand Type: 5, Rank: 866
+ Winnings: 286646
+Hand: J66J6, Bid: 308, Hand Type: 5, Rank: 867
+ Winnings: 267036
+Hand: J8JJ8, Bid: 19, Hand Type: 5, Rank: 868
+ Winnings: 16492
+Hand: JTTJT, Bid: 370, Hand Type: 5, Rank: 869
+ Winnings: 321530
+Hand: JJ66J, Bid: 69, Hand Type: 5, Rank: 870
+ Winnings: 60030
+Hand: JJQQQ, Bid: 436, Hand Type: 5, Rank: 871
+ Winnings: 379756
+Hand: JAAJA, Bid: 993, Hand Type: 5, Rank: 872
+ Winnings: 865896
+Hand: Q55Q5, Bid: 992, Hand Type: 5, Rank: 873
+ Winnings: 866016
+Hand: QTTTQ, Bid: 622, Hand Type: 5, Rank: 874
+ Winnings: 543628
+Hand: QTQQT, Bid: 252, Hand Type: 5, Rank: 875
+ Winnings: 220500
+Hand: QQ3Q3, Bid: 392, Hand Type: 5, Rank: 876
+ Winnings: 343392
+Hand: QQ9Q9, Bid: 963, Hand Type: 5, Rank: 877
+ Winnings: 844551
+Hand: QQQ66, Bid: 853, Hand Type: 5, Rank: 878
+ Winnings: 748934
+Hand: QQKKK, Bid: 894, Hand Type: 5, Rank: 879
+ Winnings: 785826
+Hand: QAQAQ, Bid: 452, Hand Type: 5, Rank: 880
+ Winnings: 397760
+Hand: K444K, Bid: 135, Hand Type: 5, Rank: 881
+ Winnings: 118935
+Hand: K44KK, Bid: 429, Hand Type: 5, Rank: 882
+ Winnings: 378378
+Hand: K55KK, Bid: 967, Hand Type: 5, Rank: 883
+ Winnings: 853861
+Hand: K88KK, Bid: 823, Hand Type: 5, Rank: 884
+ Winnings: 727532
+Hand: K99K9, Bid: 459, Hand Type: 5, Rank: 885
+ Winnings: 406215
+Hand: KTTKK, Bid: 190, Hand Type: 5, Rank: 886
+ Winnings: 168340
+Hand: KTKTT, Bid: 634, Hand Type: 5, Rank: 887
+ Winnings: 562358
+Hand: KQKQQ, Bid: 770, Hand Type: 5, Rank: 888
+ Winnings: 683760
+Hand: KK2K2, Bid: 838, Hand Type: 5, Rank: 889
+ Winnings: 744982
+Hand: KKJKJ, Bid: 712, Hand Type: 5, Rank: 890
+ Winnings: 633680
+Hand: KKK66, Bid: 786, Hand Type: 5, Rank: 891
+ Winnings: 700326
+Hand: KKK77, Bid: 280, Hand Type: 5, Rank: 892
+ Winnings: 249760
+Hand: KAKAK, Bid: 13, Hand Type: 5, Rank: 893
+ Winnings: 11609
+Hand: A22A2, Bid: 74, Hand Type: 5, Rank: 894
+ Winnings: 66156
+Hand: A666A, Bid: 493, Hand Type: 5, Rank: 895
+ Winnings: 441235
+Hand: AKAAK, Bid: 382, Hand Type: 5, Rank: 896
+ Winnings: 342272
+Hand: AA5A5, Bid: 920, Hand Type: 5, Rank: 897
+ Winnings: 825240
+Hand: AA999, Bid: 144, Hand Type: 5, Rank: 898
+ Winnings: 129312
+Hand: AAA33, Bid: 56, Hand Type: 5, Rank: 899
+ Winnings: 50344
+Hand: 22272, Bid: 814, Hand Type: 6, Rank: 900
+ Winnings: 732600
+Hand: 22J22, Bid: 775, Hand Type: 6, Rank: 901
+ Winnings: 698275
+Hand: 23222, Bid: 720, Hand Type: 6, Rank: 902
+ Winnings: 649440
+Hand: 24222, Bid: 698, Hand Type: 6, Rank: 903
+ Winnings: 630294
+Hand: 28222, Bid: 972, Hand Type: 6, Rank: 904
+ Winnings: 878688
+Hand: 29222, Bid: 423, Hand Type: 6, Rank: 905
+ Winnings: 382815
+Hand: 2AAAA, Bid: 305, Hand Type: 6, Rank: 906
+ Winnings: 276330
+Hand: 3333K, Bid: 332, Hand Type: 6, Rank: 907
+ Winnings: 301124
+Hand: 33383, Bid: 798, Hand Type: 6, Rank: 908
+ Winnings: 724584
+Hand: 33393, Bid: 277, Hand Type: 6, Rank: 909
+ Winnings: 251793
+Hand: 333A3, Bid: 737, Hand Type: 6, Rank: 910
+ Winnings: 670670
+Hand: 33J33, Bid: 875, Hand Type: 6, Rank: 911
+ Winnings: 797125
+Hand: 44443, Bid: 408, Hand Type: 6, Rank: 912
+ Winnings: 372096
+Hand: 44446, Bid: 146, Hand Type: 6, Rank: 913
+ Winnings: 133298
+Hand: 4444K, Bid: 258, Hand Type: 6, Rank: 914
+ Winnings: 235812
+Hand: 45555, Bid: 857, Hand Type: 6, Rank: 915
+ Winnings: 784155
+Hand: 47777, Bid: 533, Hand Type: 6, Rank: 916
+ Winnings: 488228
+Hand: 48888, Bid: 97, Hand Type: 6, Rank: 917
+ Winnings: 88949
+Hand: 4J444, Bid: 174, Hand Type: 6, Rank: 918
+ Winnings: 159732
+Hand: 4KKKK, Bid: 865, Hand Type: 6, Rank: 919
+ Winnings: 794935
+Hand: 4A444, Bid: 153, Hand Type: 6, Rank: 920
+ Winnings: 140760
+Hand: 52222, Bid: 154, Hand Type: 6, Rank: 921
+ Winnings: 141834
+Hand: 55552, Bid: 39, Hand Type: 6, Rank: 922
+ Winnings: 35958
+Hand: 55559, Bid: 232, Hand Type: 6, Rank: 923
+ Winnings: 214136
+Hand: 555T5, Bid: 98, Hand Type: 6, Rank: 924
+ Winnings: 90552
+Hand: 55A55, Bid: 424, Hand Type: 6, Rank: 925
+ Winnings: 392200
+Hand: 58555, Bid: 912, Hand Type: 6, Rank: 926
+ Winnings: 844512
+Hand: 5KKKK, Bid: 945, Hand Type: 6, Rank: 927
+ Winnings: 876015
+Hand: 63333, Bid: 418, Hand Type: 6, Rank: 928
+ Winnings: 387904
+Hand: 64666, Bid: 375, Hand Type: 6, Rank: 929
+ Winnings: 348375
+Hand: 65666, Bid: 182, Hand Type: 6, Rank: 930
+ Winnings: 169260
+Hand: 66626, Bid: 613, Hand Type: 6, Rank: 931
+ Winnings: 570703
+Hand: 666T6, Bid: 870, Hand Type: 6, Rank: 932
+ Winnings: 810840
+Hand: 666K6, Bid: 402, Hand Type: 6, Rank: 933
+ Winnings: 375066
+Hand: 66766, Bid: 223, Hand Type: 6, Rank: 934
+ Winnings: 208282
+Hand: 67777, Bid: 897, Hand Type: 6, Rank: 935
+ Winnings: 838695
+Hand: 6J666, Bid: 916, Hand Type: 6, Rank: 936
+ Winnings: 857376
+Hand: 73777, Bid: 82, Hand Type: 6, Rank: 937
+ Winnings: 76834
+Hand: 74444, Bid: 437, Hand Type: 6, Rank: 938
+ Winnings: 409906
+Hand: 75555, Bid: 477, Hand Type: 6, Rank: 939
+ Winnings: 447903
+Hand: 75777, Bid: 461, Hand Type: 6, Rank: 940
+ Winnings: 433340
+Hand: 77772, Bid: 284, Hand Type: 6, Rank: 941
+ Winnings: 267244
+Hand: 7777J, Bid: 126, Hand Type: 6, Rank: 942
+ Winnings: 118692
+Hand: 777T7, Bid: 846, Hand Type: 6, Rank: 943
+ Winnings: 797778
+Hand: 77977, Bid: 678, Hand Type: 6, Rank: 944
+ Winnings: 640032
+Hand: 79999, Bid: 828, Hand Type: 6, Rank: 945
+ Winnings: 782460
+Hand: 7K777, Bid: 944, Hand Type: 6, Rank: 946
+ Winnings: 893024
+Hand: 7A777, Bid: 861, Hand Type: 6, Rank: 947
+ Winnings: 815367
+Hand: 86666, Bid: 242, Hand Type: 6, Rank: 948
+ Winnings: 229416
+Hand: 88388, Bid: 969, Hand Type: 6, Rank: 949
+ Winnings: 919581
+Hand: 88688, Bid: 108, Hand Type: 6, Rank: 950
+ Winnings: 102600
+Hand: 88788, Bid: 763, Hand Type: 6, Rank: 951
+ Winnings: 725613
+Hand: 888K8, Bid: 265, Hand Type: 6, Rank: 952
+ Winnings: 252280
+Hand: 8T888, Bid: 202, Hand Type: 6, Rank: 953
+ Winnings: 192506
+Hand: 8TTTT, Bid: 398, Hand Type: 6, Rank: 954
+ Winnings: 379692
+Hand: 8Q888, Bid: 140, Hand Type: 6, Rank: 955
+ Winnings: 133700
+Hand: 8KKKK, Bid: 167, Hand Type: 6, Rank: 956
+ Winnings: 159652
+Hand: 98888, Bid: 65, Hand Type: 6, Rank: 957
+ Winnings: 62205
+Hand: 99299, Bid: 312, Hand Type: 6, Rank: 958
+ Winnings: 298896
+Hand: 99989, Bid: 839, Hand Type: 6, Rank: 959
+ Winnings: 804601
+Hand: 99996, Bid: 323, Hand Type: 6, Rank: 960
+ Winnings: 310080
+Hand: 999T9, Bid: 511, Hand Type: 6, Rank: 961
+ Winnings: 491071
+Hand: 999A9, Bid: 800, Hand Type: 6, Rank: 962
+ Winnings: 769600
+Hand: 9TTTT, Bid: 412, Hand Type: 6, Rank: 963
+ Winnings: 396756
+Hand: 9J999, Bid: 980, Hand Type: 6, Rank: 964
+ Winnings: 944720
+Hand: T2222, Bid: 51, Hand Type: 6, Rank: 965
+ Winnings: 49215
+Hand: TT5TT, Bid: 239, Hand Type: 6, Rank: 966
+ Winnings: 230874
+Hand: TTT4T, Bid: 422, Hand Type: 6, Rank: 967
+ Winnings: 408074
+Hand: TTTT3, Bid: 363, Hand Type: 6, Rank: 968
+ Winnings: 351384
+Hand: TTTT6, Bid: 752, Hand Type: 6, Rank: 969
+ Winnings: 728688
+Hand: TTTTJ, Bid: 384, Hand Type: 6, Rank: 970
+ Winnings: 372480
+Hand: TTTTK, Bid: 740, Hand Type: 6, Rank: 971
+ Winnings: 718540
+Hand: TTTQT, Bid: 103, Hand Type: 6, Rank: 972
+ Winnings: 100116
+Hand: J5555, Bid: 14, Hand Type: 6, Rank: 973
+ Winnings: 13622
+Hand: J8888, Bid: 822, Hand Type: 6, Rank: 974
+ Winnings: 800628
+Hand: JJ8JJ, Bid: 951, Hand Type: 6, Rank: 975
+ Winnings: 927225
+Hand: Q3333, Bid: 372, Hand Type: 6, Rank: 976
+ Winnings: 363072
+Hand: Q4444, Bid: 904, Hand Type: 6, Rank: 977
+ Winnings: 883208
+Hand: QQQ5Q, Bid: 943, Hand Type: 6, Rank: 978
+ Winnings: 922254
+Hand: QQQJQ, Bid: 253, Hand Type: 6, Rank: 979
+ Winnings: 247687
+Hand: QQQQ3, Bid: 903, Hand Type: 6, Rank: 980
+ Winnings: 884940
+Hand: QQQQ4, Bid: 694, Hand Type: 6, Rank: 981
+ Winnings: 680814
+Hand: QQQQ8, Bid: 778, Hand Type: 6, Rank: 982
+ Winnings: 763996
+Hand: QQQQ9, Bid: 504, Hand Type: 6, Rank: 983
+ Winnings: 495432
+Hand: QQAQQ, Bid: 11, Hand Type: 6, Rank: 984
+ Winnings: 10824
+Hand: KTKKK, Bid: 60, Hand Type: 6, Rank: 985
+ Winnings: 59100
+Hand: KJKKK, Bid: 929, Hand Type: 6, Rank: 986
+ Winnings: 915994
+Hand: KKKK6, Bid: 158, Hand Type: 6, Rank: 987
+ Winnings: 155946
+Hand: KKKK9, Bid: 475, Hand Type: 6, Rank: 988
+ Winnings: 469300
+Hand: KKKAK, Bid: 303, Hand Type: 6, Rank: 989
+ Winnings: 299667
+Hand: A4AAA, Bid: 787, Hand Type: 6, Rank: 990
+ Winnings: 779130
+Hand: A6666, Bid: 725, Hand Type: 6, Rank: 991
+ Winnings: 718475
+Hand: A6AAA, Bid: 631, Hand Type: 6, Rank: 992
+ Winnings: 625952
+Hand: A8888, Bid: 896, Hand Type: 6, Rank: 993
+ Winnings: 889728
+Hand: ATTTT, Bid: 878, Hand Type: 6, Rank: 994
+ Winnings: 872732
+Hand: AKAAA, Bid: 931, Hand Type: 6, Rank: 995
+ Winnings: 926345
+Hand: AAA7A, Bid: 32, Hand Type: 6, Rank: 996
+ Winnings: 31872
+Hand: AAATA, Bid: 293, Hand Type: 6, Rank: 997
+ Winnings: 292121
+Hand: AAAJA, Bid: 936, Hand Type: 6, Rank: 998
+ Winnings: 934128
+Hand: AAAA8, Bid: 263, Hand Type: 6, Rank: 999
+ Winnings: 262737
+Hand: JJJJJ, Bid: 900, Hand Type: 7, Rank: 1000
+ Winnings: 900000
+252052080
+#+end_example
