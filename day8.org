@@ -1,0 +1,166 @@
+
+* Part 1
+
+#+BEGIN_SRC python :results output :session part2 :tangle day8.py
+  
+puzzleInput = list(map((lambda line : line.strip()), open("./day8.txt", "r").readlines()))
+
+class networkLR:
+
+    def __init__(self, node, left, right):
+        self.node = node
+        self.left = left
+        self.right = right
+
+    def __str__(self):
+        return f'node: {self.node}, LR: ({self.left}, {self.right})'
+
+instructions = list(puzzleInput[0])
+
+#print(instructions)
+
+networks = [networkLR(i.split(" = ")[0],i.split(",")[0][-3::],i.split(", ")[1][:3:]) for i in puzzleInput[2:]]
+
+#for network in networks:
+#    print(network)
+
+def getNextNode(direction, currNode, networks):
+    if direction == "L":
+        nextNode = currNode.left
+    elif direction == "R":
+        nextNode = currNode.right
+    else:
+        print(f'Error in Direction: {direction}')
+        exit()
+    for network in networks:
+        if network.node == nextNode:
+            return network
+
+# should be BBB in sample data
+#print(getNextNode("L", networks[0], networks))
+
+def getEntryNode(networks, nodeName):
+    for network in networks:
+        if network.node == nodeName:
+            return network
+    print(f'No "{nodeName}" found')
+    exit()
+
+   
+
+def navigateNetwork(instructions, networks, entryNetwork):
+    currNode = entryNetwork
+    count = 0
+    countMax = (len(puzzleInput) * 2)
+    while (currNode.node != "ZZZ"):
+        step = instructions.pop(0)
+        instructions.append(step)
+        currNode = getNextNode(step, currNode, networks)
+        #print(f'count max: {countMax}, count: {count}')
+        count += 1
+
+    return count
+
+def doPart1():
+    aaaNode = getEntryNode(networks, "AAA")
+    print(aaaNode)
+
+    part1result = navigateNetwork(instructions, networks, aaaNode)
+
+    print(part1result)
+        
+doPart1()
+
+#+END_SRC
+
+#+RESULTS:
+: node: AAA, LR: (XRF, DNR)
+: 17141
+
+* Part 2
+
+
+#+BEGIN_SRC python :results output :session part2 :tangle day8.py
+import re
+import math
+
+def checkForAllExits(networks, regexp):
+    total = 0
+    for network in networks:
+        if re.search(regexp, network.node):
+            #print("Found an exit")
+            total += 1
+
+    if total == len(networks):
+        return True #will break while loop
+
+    else:
+        return False
+
+def navigateGhostNetwork(instructions, networks, entryNetworks):
+    currNodes = entryNetworks
+    count = 0
+    #countMax = (len(puzzleInput) * 2)
+    nextNodes = []
+    while (not checkForAllExits(currNodes, "..Z")):
+        step = instructions.pop(0)
+        instructions.append(step)
+        for node in currNodes:
+            nextNodes.append(getNextNode(step, node, networks))
+
+        currNodes = nextNodes
+        nextNodes = []
+        #print(f'count max: {countMax}, count: {count}')
+        count += 1
+
+    return count
+
+def getEntryNodesRE(networks, regexp):
+    entryNodes = []
+    for network in networks:
+        if re.search(regexp, network.node):
+            entryNodes.append(network)
+    if entryNodes:
+        return entryNodes
+    print(f'No "{nodeName}" found')
+    exit()
+
+def navigateNetworkRE(instructions, networks, entryNetwork, regexp):
+    currNode = entryNetwork
+    count = 0
+    countMax = (len(puzzleInput) * 2)
+    while (not re.search(regexp, currNode.node)):
+        step = instructions.pop(0)
+        instructions.append(step)
+        currNode = getNextNode(step, currNode, networks)
+        #print(f'count max: {countMax}, count: {count}')
+        count += 1
+
+    return count
+
+
+def doPart2():
+    xxAnodes = getEntryNodesRE(networks, "..A")
+    for i in xxAnodes:
+        print(i)
+    
+    counts = []
+    for entry in xxAnodes:
+        counts.append(navigateNetworkRE(instructions, networks, entry, "..Z"))
+    lcm = 1
+    for i in counts:
+        lcm = lcm*i//math.gcd(lcm, i)
+    print(lcm) 
+
+doPart2()
+
+#+END_SRC
+
+#+RESULTS:
+: node: AAA, LR: (XRF, DNR)
+: node: XQA, LR: (TGT, GPT)
+: node: SKA, LR: (VMT, FBH)
+: node: NQA, LR: (NNG, KCL)
+: node: LJA, LR: (CQN, GDD)
+: node: NVA, LR: (PBN, VMD)
+: 10818234074807

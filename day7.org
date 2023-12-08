@@ -2183,3 +2183,49 @@ Hand: KTJJT, Bid: 220, Hand Type: 6, Rank: 5
  Winnings: 1100
 5905
 #+end_example
+
+
+
+* Part 1 again - Haskell
+
+#+BEGIN_SRC shell :results raw
+ghc -o d7p1 ./d7p1.hs
+./d7p1
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC haskell :results output :tangle d7p1.hs
+
+main :: IO ()
+main = do
+  -- Read the contents of the file
+  content <- readFile "./day7.txt"
+  -- Split the contents into a list of strings
+  let stringsList = lines content
+
+
+  putStrLn (show (getCardValue 'A'))
+
+  --map putStrLn stringsList
+
+
+getCardValue :: Char -> Int
+getCardValue 'A' = 14
+getCardValue 'K' = 13
+getCardValue 'Q' = 12
+getCardValue 'J' = 11
+getCardValue 'T' = 10
+getCardValue '9' = 9
+getCardValue '8' = 8
+getCardValue '7' = 7
+getCardValue '6' = 6
+getCardValue '5' = 5
+getCardValue '4' = 4
+getCardValue '3' = 3
+getCardValue '2' = 2
+getCardValue  x  = 0
+
+#+END_SRC
+
+#+RESULTS:
