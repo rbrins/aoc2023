@@ -147,6 +147,8 @@ def doPart2():
     counts = []
     for entry in xxAnodes:
         counts.append(navigateNetworkRE(instructions, networks, entry, "..Z"))
+
+    print(counts)
     lcm = 1
     for i in counts:
         lcm = lcm*i//math.gcd(lcm, i)
@@ -163,4 +165,5 @@ doPart2()
 : node: NQA, LR: (NNG, KCL)
 : node: LJA, LR: (CQN, GDD)
 : node: NVA, LR: (PBN, VMD)
+: [17141, 16579, 18827, 12083, 13207, 22199]
 : 10818234074807
