@@ -1,0 +1,125 @@
+
+
+* Part 1
+
+- 1842168673 too high
+- some schenanigans gave me a 0 for the last number that was not in an all zero step
+- 1766227040 too low
+#+BEGIN_SRC python :results output :session part2
+histories = list(map((lambda line : [int(i) for i in line.split()]), open("./day9.txt", "r").readlines()))
+
+
+def getStepDifference(step):
+    stepDiff = []
+    max = len(step) # if len == 6, only 5 in the stepDiff
+    count = 0
+    for i in step:
+        if count >= max-1:
+            break
+        stepDiff.append(step[count+1] - i)
+        count += 1
+    #print(stepDiff)
+    return stepDiff
+
+def checkForZeroStep(step):
+    for i in step:
+        if i != 0:
+            return False
+
+    return True
+
+historyTree = []
+
+for history in histories:
+    step = history
+    branch = []
+    branch.append(history)
+    while (not checkForZeroStep(step)):
+        step = getStepDifference(step)
+        branch.append(step)
+
+    historyTree.append(branch)
+
+
+def addPrediction(belowStep, currStep):
+    belowLast = belowStep[-1]
+    currLast = currStep[-1]
+    if checkForZeroStep(currStep):
+        return 0
+    #print(f'currLast: {currLast}, belowLast: {belowLast}')
+    return belowLast + currLast
+
+
+# starting with 0 row then moving up 
+for branch in historyTree:
+    belowStep = [0]
+    for step in branch[::-1]:
+        step.append(addPrediction(belowStep, step))
+        belowStep = step
+
+def doPart1(tree):
+    part1result = 0
+    for branch in tree:
+        part1result += branch[0][-1]
+
+    print(f'Part 1 Result: {part1result}')
+
+doPart1(historyTree)
+
+#+END_SRC
+
+#+RESULTS:
+: Part 1 Result: 1842168671
+
+
+* Part 2 
+
+- 6460145990 too high
+
+#+BEGIN_SRC python :results output :session part2
+
+#backwards_histories = list(map((lambda line : [int(i) for i in line.split()]), open("./day9.txt", "r").readlines()))
+backwards_histories = [list(reversed(i)) for i in histories]
+#print(histories)
+#print(backwards_histories)
+
+#def addPrediction(belowStep, currStep):
+#    belowLast = belowStep[-1]
+#    currLast = currStep[-1]
+#    if checkForZeroStep(currStep):
+#        return 0
+#    #print(f'currLast: {currLast}, belowLast: {belowLast}')
+#    return belowLast + currLast
+
+historyTree = []
+
+for history in backwards_histories:
+    step = history
+    branch = []
+    branch.append(history)
+    while (not checkForZeroStep(step)):
+        step = getStepDifference(step)
+        branch.append(step)
+
+    historyTree.append(branch)
+
+for branch in historyTree:
+    belowStep = [0]
+    for step in branch[::-1]:
+        step.append(addPrediction(belowStep, step))
+        belowStep = step
+
+def doPart2(tree):
+    part1result = 0
+    for branch in tree:
+        part1result += branch[0][-1]
+
+    print(f'Part 2 Result: {part1result}')
+
+doPart2(historyTree)
+
+
+#+END_SRC
+
+#+RESULTS:
+: Part 2 Result: 903
