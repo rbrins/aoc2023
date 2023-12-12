@@ -1,0 +1,210 @@
+#+title:Day11
+
+* Part 1
+
+#+BEGIN_SRC python :results output :session day11
+import itertools
+import math
+
+grid = list(map((lambda line : line.strip()), open("./day11_sample.txt", "r").readlines()))
+
+def NoGalaxies_Rows(grid):
+    row_empty = []
+    row_flag = True # if it stays true then we will duplicate the row
+    for row in grid:
+        for i in row:
+            if i != '.':
+                row_flag = False
+        row_empty.append(row_flag)
+        row_flag = True
+
+    return row_empty
+
+def NoGalaxies_Cols(grid):
+    col_empty_counts = []
+    col_empty = []
+
+    for j in range(0, len(grid)):
+        col_empty_counts.append(0)
+        col_empty.append(False)
+    for y, row in enumerate(grid):
+        for x, i in enumerate(row):
+            if i == '.':
+                col_empty_counts[x] += 1
+
+    for x, value in enumerate(col_empty_counts):
+        if value == len(grid):
+            col_empty[x] = True
+
+    return col_empty
+
+# for sample data
+#print("No Galaxies in Rows: {}".format(NoGalaxies_Rows(grid)))
+#print("No Galaxies in Cols: {}".format(NoGalaxies_Cols(grid)))
+
+def AddExpandedSpace_Cols(grid, col_locs):
+    newRow = ""
+    newGrid = []
+    for y, row in enumerate(grid):
+        for x, i in enumerate(row):
+            if col_locs[x]:
+                newRow += "."*2
+            else:
+                newRow += i
+        newGrid.append(newRow)
+        newRow = ""
+
+    return newGrid
+
+def AddExpandedSpace_Rows(grid, row_locs):
+    newGrid = []
+    for y, row in enumerate(grid):
+        if row_locs[y]:
+            newGrid.append(row)
+        newGrid.append(row)
+
+    return newGrid
+
+
+NoGalax_rows = NoGalaxies_Rows(grid)
+NoGalax_cols = NoGalaxies_Cols(grid)
+
+updatedCols = AddExpandedSpace_Cols(grid, NoGalax_cols)
+space = AddExpandedSpace_Rows(updatedCols, NoGalax_rows)
+
+# for sample data
+#print(space)
+
+def assignGalaxyNum(space):
+    currNum = 1 # big assumption here but could tell from the input easily
+    newSpace = []
+    galaxyCoords = []
+    for y, row in enumerate(space):
+        newSpace.append("")
+        for x, i in enumerate(row):
+            if i == "#":
+                newSpace[y] += str(currNum)
+                galaxyCoords.append((x, y))
+                currNum += 1
+            else:
+                newSpace[y] += i
+
+    return newSpace, currNum-1, galaxyCoords
+
+def createGalaxiesPairs(numGalaxies):
+    singleNum = []
+    for i in range(1, numGalaxies+1):
+        singleNum.append(i)
+
+    pairs = list(itertools.combinations(singleNum, 2))
+    pairs_max_length = ((numGalaxies)*(numGalaxies-1))/2
+    print(f'# of Pairs: {len(pairs)}')
+    assert(len(pairs) == pairs_max_length)
+
+    return pairs
+
+
+
+final_frontier = assignGalaxyNum(space)
+pairs = createGalaxiesPairs(final_frontier[1])
+
+def calcDistance(pair, coordinates):
+    gal_1_pos = coordinates[pair[0]-1]
+    gal_2_pos = coordinates[pair[1]-1]
+    #print(f'Pair: {pair}, Coordinate 1: {gal_1_pos}, Coordinate 2: {gal_2_pos}')
+
+    path = (abs(gal_1_pos[0] - gal_2_pos[0]) + abs(gal_1_pos[1] - gal_2_pos[1]))
+
+    return path
+
+def doPart1():
+    part1result = 0
+    for pair in pairs:
+        distance = calcDistance(pair, final_frontier[2])
+        #print(f'Pair: {pair}, Distance: {distance}')
+        part1result += distance
+    print(final_frontier[2])
+    print(part1result)
+
+doPart1()
+#+END_SRC
+
+#+RESULTS:
+: # of Pairs: 36
+: [(4, 0), (9, 1), (0, 2), (8, 5), (1, 6), (12, 7), (9, 10), (0, 11), (5, 11)]
+: 374
+
+* Part 2
+- too high - 37146879213645
+#+BEGIN_SRC python :results output :session day11
+
+NoGalax_rows = NoGalaxies_Rows(grid)
+NoGalax_cols = NoGalaxies_Cols(grid)
+
+# for sample data
+#print(space)
+
+# newSpace, currNum-1, galaxyCoords
+final_frontier = assignGalaxyNum(grid)
+pairs = createGalaxiesPairs(final_frontier[1])
+
+def calcAdjustedExpansion_cols(cols_loc, pair_coords, adjustment):
+    currAdjustment = 0
+    new_pair_coords = []
+    for xy in pair_coords:
+        #print(f'Pair Coord: {xy}')
+        x = xy[0]
+        y = xy[1]
+        for i in range(0, x):
+            if cols_loc[i]:
+                #print(f'Col Expanded: {i}, col_loc value: {cols_loc[i]}')
+                currAdjustment += adjustment # adds the adjustment value each time
+        adjust_count = (currAdjustment / adjustment)
+        new_x = int(currAdjustment + x - adjust_count)
+        new_pair_coords.append((new_x, y))
+        currAdjustment = 0
+
+    return new_pair_coords
+
+def calcAdjustedExpansion_rows(rows_loc, pair_coords, adjustment):
+    currAdjustment = 0
+    new_pair_coords = []
+    for xy in pair_coords:
+        #print(f'Pair Coord: {xy}')
+        x = xy[0]
+        y = xy[1]
+        for i in range(0,y):
+            if rows_loc[i]:
+                #print(f'Row Expanded: {i}, row_loc value: {rows_loc[i]}')
+                currAdjustment += adjustment # adds the adjustment value each time
+        adjust_count = (currAdjustment / adjustment)
+        new_y = int(currAdjustment + y - adjust_count)
+        new_pair_coords.append((x , new_y))
+        currAdjustment = 0
+    return new_pair_coords
+
+
+
+def doPart2():
+    part2result = 0
+    adjustment = 2
+    col_pair_coords = calcAdjustedExpansion_cols(NoGalax_cols, final_frontier[2], adjustment)
+    print(final_frontier[2])
+    print(col_pair_coords)
+    new_pair_coords = calcAdjustedExpansion_rows(NoGalax_rows, col_pair_coords, adjustment)
+    print(new_pair_coords)
+    for pair in pairs:
+        distance = calcDistance(pair, new_pair_coords)
+        #print(f'Pair: {pair}, Distance: {distance}')
+        part2result += distance
+    print(part2result)
+
+doPart2()
+#+END_SRC
+
+#+RESULTS:
+: # of Pairs: 36
+: [(3, 0), (7, 1), (0, 2), (6, 4), (1, 5), (9, 6), (7, 8), (0, 9), (4, 9)]
+: [(4, 0), (9, 1), (0, 2), (8, 4), (1, 5), (12, 6), (9, 8), (0, 9), (5, 9)]
+: [(4, 0), (9, 1), (0, 2), (8, 5), (1, 6), (12, 7), (9, 10), (0, 11), (5, 11)]
+: 338
